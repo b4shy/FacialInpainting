@@ -2,3 +2,4 @@ flake8
 PyQt5
 torch
 torchvision
+pylint-fail-under

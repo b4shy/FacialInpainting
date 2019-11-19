@@ -1,15 +1,21 @@
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
-from draft import Ui_MainWindow
+'''
+Sample Module to create the GUI
+'''
 import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from draft import Ui_MainWindow
 
 
 class App(QMainWindow):
+    '''
+    GUI Handle
+    '''
     def __init__(self):
         self.ui = Ui_MainWindow()
         super().__init__()
         self.ui.setupUi(self)
 
-app = QApplication([])
-form = App()
-form.show()
-sys.exit(app.exec_())
+APP = QApplication([])
+FORM = App()
+FORM.show()
+sys.exit(APP.exec_())
