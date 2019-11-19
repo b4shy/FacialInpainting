@@ -7,8 +7,8 @@ jobs:
       - checkout # check out the code in the project directory
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
-      - run: pip3 install -r requirements.txt # run the `echo` command
+#      - run: pip3 install -r requirements.txt # run the `echo` command
       - run: pip3 install flake8
       - run: pip3 install pytest-cov
-      - run: pip3 inall pylint-fail-under
+      - run: pip3 install pylint-fail-under
       - run: pylint-fail-under 10 gui
