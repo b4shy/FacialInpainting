@@ -12,6 +12,8 @@ jobs:
       - run: pip3 install pytest-cov
       - run: pip3 install pylint-fail-under
       - run: cp .pylintrc ~
+      - run: pwd
+      - run: ls
       - run: pylint-fail-under --fail_under 7 src/
       - run: pylint-fail-under --fail_under 7 gui/create_draft_for_presentation_screenshot.py
 
