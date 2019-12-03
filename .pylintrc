@@ -3,6 +3,7 @@ extension-pkg-whitelist=PyQt5
 max-line-length=120
 ignore=partialconv2d.py
 disable=E1102
+disable = E0401
 
 [TYPECHECK]
 generated-members=numpy.*, torch.*
