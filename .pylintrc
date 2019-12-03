@@ -1,2 +1,6 @@
 [MASTER]
 extension-pkg-whitelist=PyQt5
+generated-members=numpy.*, torch.*
+max-line-length=120
+ignore=partialconv2d.py
+
