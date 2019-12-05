@@ -1,11 +1,11 @@
 """
 Data Loader Class
+Masks from https://github.com/karfly/qd-imd
 """
 import os
 import random
 from torch.utils import data
 import cv2
-# https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
 
 
 class Dataset(data.Dataset):
