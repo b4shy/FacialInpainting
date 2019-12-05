@@ -53,9 +53,9 @@ class Dataset(data.Dataset):
         rnd_mask_index = random.randrange(0, len(self.full_mask_path))
         mask_id = self.full_mask_path[rnd_mask_index]
         mask = cv2.imread(mask_id)
-        masked_image = self.overlay_mask(image, mask)
+        masked_image, mask = self.overlay_mask(image, mask)
 
-        sample = {"image": image, "masked_image": masked_image}
+        sample = {"image": image, "masked_image": masked_image, "mask": mask}
         return sample
 
     def overlay_mask(self, image, mask):
@@ -64,10 +64,10 @@ class Dataset(data.Dataset):
         :param mask: Mask
         :return: Image fused with mask
         """
-        mask = cv2.resize(mask, (1024, 1024))
-        mask = mask / 255
-        masked_image = (image * mask).astype(int)
-        return masked_image
+        mask_ = cv2.resize(mask, (1024, 1024))
+        mask_ = mask_ / 255
+        masked_image = (image * mask_).astype(int)
+        return masked_image, mask_
 
     def load_faces_paths(self):
         """
