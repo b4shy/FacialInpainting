@@ -17,5 +17,7 @@ jobs:
             - "/usr/local/bin"
             - "/usr/local/lib/python3.6/site-packages"
       - run: pylint-fail-under --rcfile=.pylintrc --fail_under 7 src/
+#      - run: pytest --ignore=tst/ --cov-report term-missing --cov=loader --cov-fail-under 80
+
 
 
