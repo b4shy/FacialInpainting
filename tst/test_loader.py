@@ -1,18 +1,23 @@
 from context import loader  # noqa
 import numpy as np
-dataset = loader.Dataset()
+import os
+path = os.path.abspath(os.path.dirname(__file__))
+
+face_path = f'{path}/mock/Faces'
+mask_path = f'{path}/mock/mask'
+dataset = loader.Dataset(faces_path=face_path, mask_path=mask_path)
 
 
 def test_init():
-    assert len(dataset.full_mask_path) == 50000
+    assert len(dataset.full_mask_path) == 1
 
 
 def test_init_2():
-    assert len(dataset.full_faces_path) == 70000
+    assert len(dataset.full_faces_path) == 1
 
 
 def test_length():
-    assert len(dataset) == 70000
+    assert len(dataset) == 1
 
 
 def test_get_item_type():

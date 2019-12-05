@@ -14,7 +14,8 @@ class Dataset(data.Dataset):
     """
     def __init__(self, faces_path='../dat/Faces/ffhq-dataset/images1024x1024/', mask_path='../dat/qd_imd/train/'):
         """
-        Initialize Dataset
+        Initialize Dataset.
+        The file structure in the ffhq is imagex1024x1024/(dir_with_number)/herearetheimages
         :param faces_path: path to faces
         :param mask_path: path to masks
         """
