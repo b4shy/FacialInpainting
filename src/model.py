@@ -5,7 +5,7 @@ This module implements models for Facial Inpainting
 import torch
 import torch.nn as nn
 from partialconv2d import PartialConv2d
-
+import matplotlib.pyplot as plt
 
 class DeFINe(nn.Module):
     """
@@ -63,7 +63,9 @@ class DeFINe(nn.Module):
         """
 
         img = torch.tensor(img, dtype=torch.float, requires_grad=False).to(self.device)
+        img = img.permute(0, 3, 1, 2)
         mask = torch.tensor(mask, dtype=torch.float, requires_grad=False).to(self.device)
+        mask = mask.permute(0, 3, 1, 2)
 
         out0, mask0 = self.forward_encode_block(self.encode0, img, mask, False)
         out1, mask1 = self.forward_encode_block(self.encode1, out0, mask0, False)
@@ -125,3 +127,4 @@ class DeFINe(nn.Module):
         if use_batchnorm:
             out = nn.BatchNorm2d(operation.out_channels)(out)
         return nn.LeakyReLU(0.2)(out), mask
+

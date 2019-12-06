@@ -49,6 +49,7 @@ class Dataset(data.Dataset):
         image_id = self.full_faces_path[index]
         image = cv2.imread(image_id)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (512, 512))
 
         rnd_mask_index = random.randrange(0, len(self.full_mask_path))
         mask_id = self.full_mask_path[rnd_mask_index]
@@ -64,7 +65,7 @@ class Dataset(data.Dataset):
         :param mask: Mask
         :return: Image fused with mask
         """
-        mask_ = cv2.resize(mask, (1024, 1024))
+        mask_ = mask
         mask_ = mask_ / 255
         masked_image = (image * mask_).astype(int)
         return masked_image, mask_
