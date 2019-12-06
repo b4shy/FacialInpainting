@@ -3,7 +3,6 @@ Data Loader Class
 Masks from https://github.com/karfly/qd-imd
 """
 import os
-import random
 from torch.utils import data
 import cv2
 
@@ -50,11 +49,12 @@ class Dataset(data.Dataset):
         image = cv2.imread(image_id)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = cv2.resize(image, (512, 512))
+        image = image / 255  # Normalize
 
-        rnd_mask_index = random.randrange(0, len(self.full_mask_path))
+        rnd_mask_index = 0# random.randrange(0, len(self.full_mask_path))
         mask_id = self.full_mask_path[rnd_mask_index]
         mask = cv2.imread(mask_id)
-        masked_image, mask = self.overlay_mask(image, mask)
+        masked_image = self.overlay_mask(image, mask)
 
         sample = {"image": image, "masked_image": masked_image, "mask": mask}
         return sample
@@ -65,10 +65,9 @@ class Dataset(data.Dataset):
         :param mask: Mask
         :return: Image fused with mask
         """
-        mask_ = mask
-        mask_ = mask_ / 255
-        masked_image = (image * mask_).astype(int)
-        return masked_image, mask_
+        masked_image = image.copy()
+        masked_image[mask == 0] = 1
+        return masked_image
 
     def load_faces_paths(self):
         """

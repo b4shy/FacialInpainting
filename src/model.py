@@ -5,7 +5,7 @@ This module implements models for Facial Inpainting
 import torch
 import torch.nn as nn
 from partialconv2d import PartialConv2d
-import matplotlib.pyplot as plt
+
 
 class DeFINe(nn.Module):
     """
@@ -54,17 +54,17 @@ class DeFINe(nn.Module):
         self.decode7 = PartialConv2d(67, 3, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
 
-    def forward(self, img, mask):
+    def forward(self, image, mask_input):
         """
         Inference on image
-        :param img: batch of tensors [b, 3, h, w]
-        :param mask: batch of masks [b, 3, h, w]
+        :param image: batch of tensors [b, 3, h, w]
+        :param mask_input: batch of masks [b, 3, h, w]
         :return: tensor with inpainted image [b, 3, h, w]
         """
 
-        img = torch.tensor(img, dtype=torch.float, requires_grad=False).to(self.device)
+        img = torch.tensor(image, dtype=torch.float, requires_grad=False).to(self.device)
         img = img.permute(0, 3, 1, 2)
-        mask = torch.tensor(mask, dtype=torch.float, requires_grad=False).to(self.device)
+        mask = torch.tensor(mask_input, dtype=torch.float, requires_grad=False).to(self.device)
         mask = mask.permute(0, 3, 1, 2)
 
         out0, mask0 = self.forward_encode_block(self.encode0, img, mask, False)
@@ -85,7 +85,7 @@ class DeFINe(nn.Module):
         decode_out6, decode_mask6 = self.forward_decode_block(self.decode6, decode_out5, decode_mask5, out0, mask0)
         img_out, mask_out = self.forward_decode_block(self.decode7, decode_out6, decode_mask6, img, mask)
 
-        return img_out, mask_out
+        return img_out, mask_out.float
 
     def forward_encode_block(self, operation, img_tensor, mask_tensor, use_batchnorm=False):
         """

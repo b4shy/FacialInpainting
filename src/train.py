@@ -6,7 +6,6 @@ from torch.utils import data
 from torch.utils.data.sampler import SubsetRandomSampler
 import torch
 import loss
-import matplotlib.pyplot as plt
 from model import DeFINe
 from loader import Dataset
 
@@ -20,9 +19,9 @@ NET.to(device)
 
 params = {'batch_size': 4,
           'shuffle': False,
-          'num_workers': 4}
+          'num_workers': 1}
 
-max_epochs = 300
+max_epochs = 4000
 
 training_set = Dataset()
 training_generator = data.DataLoader(training_set, **params, sampler=SubsetRandomSampler([0]))
@@ -31,26 +30,21 @@ validation_set = Dataset(mask_path='../dat/qd_imd/test/')
 validation_generator = data.DataLoader(validation_set, **params)
 
 
-opt = torch.optim.Adam(NET.parameters(), lr=1e-4)
+opt = torch.optim.Adam(NET.parameters(), lr=0.0002)
 NET.train()
 
 for epoch in range(max_epochs):
     for batch in training_generator:
         opt.zero_grad()
         masked_img = batch["masked_image"]
-        mask = batch["masked_image"]
+        mask = batch["mask"]
         pred, mask_ = NET(masked_img, mask)
-        actual_loss = loss.l1_loss(pred, batch["image"], device)
-        print(actual_loss)
+        actual_loss = loss.l_hole(pred, batch["image"], mask, device)
+        if epoch % 100 == 0:
+            print(epoch)
+            print(actual_loss)
+            model_path = f'../ckt/{epoch}'
+            torch.save(NET.state_dict(), model_path)
         actual_loss.backward()
         opt.step()
         torch.cuda.empty_cache()
-
-pred, mask = NET(batch["masked_image"], batch["mask"])
-
-fig, axis = plt.subplots(1, 2)
-axis[0].imshow(batch["masked_image"][0].reshape(512, 512, 3))
-pred = pred.int().cpu().detach().numpy()
-pred = pred.transpose(0, 2, 3, 1)
-axis[1].imshow(pred[0])
-plt.show()
