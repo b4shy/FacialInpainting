@@ -4,6 +4,11 @@ Implement all the losses needed for the Inpainting.
 import torch
 
 
+def l1_loss(prediction, orig_image, device):
+    img = orig_image.permute(0, 3, 1, 2).float().to(device)
+    return torch.nn.L1Loss()(prediction, img)
+
+
 def l_hole(prediction, orig_image, mask, device):
     """
     L hole loss according to the paper

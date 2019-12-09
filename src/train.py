@@ -39,7 +39,7 @@ for epoch in range(max_epochs):
         masked_img = batch["masked_image"]
         mask = batch["mask"]
         pred, mask_ = NET(masked_img, mask)
-        actual_loss = loss.l_hole(pred, batch["image"], mask, device)
+        actual_loss = loss.l1_loss(pred, batch["image"], device)
         if epoch % 100 == 0:
             print(epoch)
             print(actual_loss)
