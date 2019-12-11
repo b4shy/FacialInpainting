@@ -5,13 +5,14 @@ Masks from https://github.com/karfly/qd-imd
 import os
 from torch.utils import data
 import cv2
+import random
 
 
 class Dataset(data.Dataset):
     """
     Manages Data Loading
     """
-    def __init__(self, faces_path='../dat/Faces/ffhq-dataset/images1024x1024/', mask_path='../dat/qd_imd/train/'):
+    def __init__(self, faces_path='../dat/Faces/ffhq-dataset/images512x512/', mask_path='../dat/qd_imd/train/'):
         """
         Initialize Dataset.
         The file structure in the ffhq is imagex1024x1024/(dir_with_number)/herearetheimages
@@ -48,10 +49,9 @@ class Dataset(data.Dataset):
         image_id = self.full_faces_path[index]
         image = cv2.imread(image_id)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = cv2.resize(image, (512, 512))
         image = image / 255  # Normalize
 
-        rnd_mask_index = 0# random.randrange(0, len(self.full_mask_path))
+        rnd_mask_index = random.randrange(0, len(self.full_mask_path))
         mask_id = self.full_mask_path[rnd_mask_index]
         mask = cv2.imread(mask_id)
         masked_image = self.overlay_mask(image, mask)

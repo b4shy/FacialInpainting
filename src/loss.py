@@ -20,6 +20,8 @@ def l_hole(prediction, orig_image, mask, device):
     img_permuted = orig_image.permute(0, 3, 1, 2).float().to(device)
     mask_permuted = mask.permute(0, 3, 1, 2).float().to(device)
 
+    res = torch.sum(torch.abs((1 - mask_permuted) * (prediction - img_permuted)))
+    return torch.mean(res, dim=0)
     pp_gt = (1 - mask_permuted) * img_permuted
     pp_pred = (1 - mask_permuted) * prediction
     return torch.nn.L1Loss()(pp_gt, pp_pred)

@@ -54,15 +54,15 @@ class DeFINe(nn.Module):
         self.decode7 = PartialConv2d(67, 3, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
 
-    def forward(self, image, mask_input):
+    def forward(self, masked_image, mask_input):
         """
         Inference on image
-        :param image: batch of tensors [b, 3, h, w]
+        :param masked_image: batch of tensors [b, 3, h, w]
         :param mask_input: batch of masks [b, 3, h, w]
         :return: tensor with inpainted image [b, 3, h, w]
         """
 
-        img = torch.tensor(image, dtype=torch.float, requires_grad=False).to(self.device)
+        img = torch.tensor(masked_image, dtype=torch.float, requires_grad=False).to(self.device)
         img = img.permute(0, 3, 1, 2)
         mask = torch.tensor(mask_input, dtype=torch.float, requires_grad=False).to(self.device)
         mask = mask.permute(0, 3, 1, 2)
