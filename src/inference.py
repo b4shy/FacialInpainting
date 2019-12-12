@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import torch
 from model import DeFINe
 
-img0_path = f'../dat/Faces/ffhq-dataset/images1024x1024/28000/28534.png'
-mask0_path = f'../dat/qd_imd/train/28355_train.png'
+img0_path = f'../dat/1.png'
+mask0_path = f'../dat/mask_00000_train.png'
 image = cv2.imread(img0_path)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 image = cv2.resize(image, (512, 512))
@@ -23,7 +23,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 net = DeFINe(device=device)
 net.to(device)
-net.load_state_dict(torch.load("../ckt/1700"))
+net.load_state_dict(torch.load("../ckt/0", map_location=torch.device('cpu')))
 net.eval()
 
 masked_image = masked_image.reshape(1, 512, 512, 3)

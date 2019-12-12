@@ -26,16 +26,23 @@ mask_path = args.mask_path
 checkpoint_path = args.checkpoint_path
 
 use_cuda = torch.cuda.is_available()
+cuda_device_count = torch.cuda.device_count()
+print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe(device=device)
+
+if cuda_device_count > 1:
+    print("Use", cuda_device_count, "GPUs!")
+    NET = torch.nn.DataParallel(NET)
+
 NET.to(device)
 
-params = {'batch_size': 4,
-          'shuffle': False,
-          'num_workers': 1}
+params = {'batch_size': 8,
+          'shuffle': True,
+          'num_workers': 4}
 
-max_epochs = 2000
+max_epochs = 200
 
 training_set = Dataset(faces_path=faces_path, mask_path=mask_path)
 training_generator = data.DataLoader(training_set, **params)
@@ -57,13 +64,16 @@ for epoch in range(max_epochs):
         mask = batch["mask"]
         pred, mask_ = NET(masked_img, mask)
         actual_loss = loss.l1_loss(pred, batch["image"], device)
-        if epoch % 100 == 0:
+
+        if GLOBAL_STEP % 1000 == 0:
             print(actual_loss)
+            grids = create_grids(masked_img, pred)
+            write_to_tensorboard(writer, grids, actual_loss, GLOBAL_STEP)
+
         actual_loss.backward()
         opt.step()
         torch.cuda.empty_cache()
-        grids = create_grids(masked_img, pred)
-        write_to_tensorboard(writer, grids, actual_loss, GLOBAL_STEP)
         GLOBAL_STEP += 1
+
     model_path = os.path.join(checkpoint_path, str(epoch))
     torch.save(NET.state_dict(), model_path)
