@@ -15,8 +15,17 @@ def create_grids(masked_imgs, predicted_imgs):
     return grid_masked_image, grid_predicted_image
 
 
-def write_to_tensorboard(writer, grids, actual_loss,  GLOBAL_STEP):
-    masked_grid, predicted_grid = grids
-    writer.add_image("images", masked_grid, global_step=GLOBAL_STEP)
-    writer.add_image("Predictions", predicted_grid, global_step=GLOBAL_STEP)
+def write_to_tensorboard(writer, grids, actual_loss, GLOBAL_STEP):
+    """
+    :param writer: Tensorboard writer
+    :param grids: Image Grids, None if only the loss shall be added
+    :param actual_loss: actual loss
+    :param GLOBAL_STEP: Actual Step
+    :return: Nothing
+    """
+
+    if grids:
+        masked_grid, predicted_grid = grids
+        writer.add_image("images", masked_grid, global_step=GLOBAL_STEP)
+        writer.add_image("Predictions", predicted_grid, global_step=GLOBAL_STEP)
     writer.add_scalar('Loss', actual_loss, global_step=GLOBAL_STEP)

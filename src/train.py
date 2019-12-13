@@ -70,6 +70,7 @@ for epoch in range(max_epochs):
             grids = create_grids(masked_img, pred)
             write_to_tensorboard(writer, grids, actual_loss, GLOBAL_STEP)
 
+        write_to_tensorboard(writer, None, actual_loss, GLOBAL_STEP)
         actual_loss.backward()
         opt.step()
         torch.cuda.empty_cache()

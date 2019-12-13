@@ -22,68 +22,68 @@ class DeFINe(nn.Module):
 
         self.encode0 = PartialConv2d(3, 64, kernel_size=7, stride=2, multi_channel=True,
                                      return_mask=True, padding=3)
-        kaiming_normal_(self.encode0, nonlinearity='relu')
+        kaiming_normal_(self.encode0.weight, nonlinearity='relu')
 
         self.encode1 = PartialConv2d(64, 128, kernel_size=5, stride=2, multi_channel=True,
                                      return_mask=True, padding=2)
-        kaiming_normal_(self.encode1, nonlinearity='relu')
+        kaiming_normal_(self.encode1.weight, nonlinearity='relu')
 
         self.encode2 = PartialConv2d(128, 256, kernel_size=5, stride=2, multi_channel=True,
                                      return_mask=True, padding=2)
-        kaiming_normal_(self.encode2, nonlinearity='relu')
+        kaiming_normal_(self.encode2.weight, nonlinearity='relu')
 
         self.encode3 = PartialConv2d(256, 512, kernel_size=3, stride=2, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.encode3, nonlinearity='relu')
+        kaiming_normal_(self.encode3.weight, nonlinearity='relu')
 
         self.encode4 = PartialConv2d(512, 512, kernel_size=3, stride=2, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.encode4, nonlinearity='relu')
+        kaiming_normal_(self.encode4.weight, nonlinearity='relu')
 
         self.encode5 = PartialConv2d(512, 512, kernel_size=3, stride=2, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.encode5, nonlinearity='relu')
+        kaiming_normal_(self.encode5.weight, nonlinearity='relu')
 
         self.encode6 = PartialConv2d(512, 512, kernel_size=3, stride=2, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.encode6, nonlinearity='relu')
+        kaiming_normal_(self.encode6.weight, nonlinearity='relu')
 
         self.encode7 = PartialConv2d(512, 512, kernel_size=3, stride=2, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.encode7, nonlinearity='relu')
+        kaiming_normal_(self.encode7.weight, nonlinearity='relu')
 
         # Decoding Layers
         self.decode0 = PartialConv2d(1024, 512, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode0, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode0.weight, a=0.2, nonlinearity='leaky_relu')
 
         self.decode1 = PartialConv2d(1024, 512, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode1, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode1.weight, a=0.2, nonlinearity='leaky_relu')
 
         self.decode2 = PartialConv2d(1024, 512, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode2, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode2.weight, a=0.2, nonlinearity='leaky_relu')
 
         self.decode3 = PartialConv2d(1024, 512, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode3, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode3.weight, a=0.2, nonlinearity='leaky_relu')
 
         self.decode4 = PartialConv2d(768, 256, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode4, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode4.weight, a=0.2, nonlinearity='leaky_relu')
 
         self.decode5 = PartialConv2d(384, 128, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode5, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode5.weight, a=0.2, nonlinearity='leaky_relu')
 
         self.decode6 = PartialConv2d(192, 64, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode6, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode6.weight, a=0.2, nonlinearity='leaky_relu')
 
         self.decode7 = PartialConv2d(67, 3, kernel_size=3, stride=1, multi_channel=True,
                                      return_mask=True, padding=1)
-        kaiming_normal_(self.decode7, a=0.2, nonlinearity='leaky_relu')
+        kaiming_normal_(self.decode7.weight, a=0.2, nonlinearity='leaky_relu')
 
     def forward(self, masked_image, mask_input):
         """
