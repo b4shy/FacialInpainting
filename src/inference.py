@@ -23,7 +23,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 net = DeFINe(device=device)
 net.to(device)
-net.load_state_dict(torch.load("../ckt/0", map_location=torch.device('cpu')))
+net.load_state_dict(torch.load("../ckt/3", map_location=torch.device('cpu')))
 net.eval()
 
 masked_image = masked_image.reshape(1, 512, 512, 3)

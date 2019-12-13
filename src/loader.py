@@ -49,6 +49,7 @@ class Dataset(data.Dataset):
         image_id = self.full_faces_path[index]
         image = cv2.imread(image_id)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (512, 512))
         image = image / 255  # Normalize
 
         rnd_mask_index = random.randrange(0, len(self.full_mask_path))
