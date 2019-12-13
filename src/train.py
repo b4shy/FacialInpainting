@@ -19,8 +19,10 @@ parser.add_argument('--mask_path', help='path to image folder (up to train or te
                     default='../dat/qd_imd/train/')
 parser.add_argument('--checkpoint_path', help='path to store the checkpoints',
                     default='../dat/qd_imd/train/')
-parser.add_argument('--batch_size', help='batch Size',
-                    default=16)
+parser.add_argument('--batch_size', help='batch Size', type=int,
+                    default=2)
+parser.add_argument('--learning_rate', help='Learning Rate', type=float,
+                    default=5e-5)
 
 
 args = parser.parse_args()
@@ -28,13 +30,14 @@ faces_path = args.img_path
 mask_path = args.mask_path
 checkpoint_path = args.checkpoint_path
 batch_size = args.batch_size
+learning_rate = args.learning_rate
 
 use_cuda = torch.cuda.is_available()
 cuda_device_count = torch.cuda.device_count()
 print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
-NET = DeFINe(device=device)
+NET = DeFINe()
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
@@ -55,22 +58,23 @@ validation_set = Dataset(mask_path='../dat/qd_imd/test/')
 validation_generator = data.DataLoader(validation_set, **params)
 
 
-opt = torch.optim.Adam(NET.parameters(), lr=1e-5)
+opt = torch.optim.Adam(NET.parameters(), lr=learning_rate)
 NET.train()
 
 writer = SummaryWriter()
 GLOBAL_STEP = 0
-
 for epoch in range(max_epochs):
     for batch in training_generator:
         opt.zero_grad()
-        masked_img = batch["masked_image"]
-        mask = batch["mask"]
-        pred, mask_ = NET(masked_img, mask)
-        actual_loss = loss.l1_loss(pred, batch["image"], device)
+        masked_img = batch["masked_image"].to(device).float()
+        mask = batch["mask"].to(device).float()
+        image = batch["image"].to(device)
+        pred = NET(masked_img, mask)
+        actual_loss = loss.l1_loss(pred, image, device)
 
         if GLOBAL_STEP % 1000 == 0:
             print(actual_loss)
+
             grids = create_grids(masked_img, pred)
             write_to_tensorboard(writer, grids, actual_loss, GLOBAL_STEP)
 

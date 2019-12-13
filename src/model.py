@@ -13,12 +13,11 @@ class DeFINe(nn.Module):
     This class implements the Deep Facial Inpainting Model
     """
 
-    def __init__(self, device):
+    def __init__(self, ):
         super().__init__()
 
         # Now we define the model
         # The model is a Unet, but uses the partial convolutions from nvidia
-        self.device = device
 
         self.encode0 = PartialConv2d(3, 64, kernel_size=7, stride=2, multi_channel=True,
                                      return_mask=True, padding=3)
@@ -85,18 +84,15 @@ class DeFINe(nn.Module):
                                      return_mask=True, padding=1)
         kaiming_normal_(self.decode7.weight, a=0.2, nonlinearity='leaky_relu')
 
-    def forward(self, masked_image, mask_input):
+    def forward(self, masked_image, input_mask):
         """
         Inference on image
         :param masked_image: batch of tensors [b, 3, h, w]
         :param mask_input: batch of masks [b, 3, h, w]
         :return: tensor with inpainted image [b, 3, h, w]
         """
-
-        img = torch.tensor(masked_image, dtype=torch.float, requires_grad=False).to(self.device)
-        img = img.permute(0, 3, 1, 2)
-        mask = torch.tensor(mask_input, dtype=torch.float, requires_grad=False).to(self.device)
-        mask = mask.permute(0, 3, 1, 2)
+        img = masked_image.permute(0, 3, 1, 2)
+        mask = input_mask.permute(0, 3, 1, 2)
 
         out0, mask0 = self.forward_encode_block(self.encode0, img, mask, False)
         out1, mask1 = self.forward_encode_block(self.encode1, out0, mask0, False)
@@ -116,7 +112,7 @@ class DeFINe(nn.Module):
         decode_out6, decode_mask6 = self.forward_decode_block(self.decode6, decode_out5, decode_mask5, out0, mask0)
         img_out, mask_out = self.forward_decode_block(self.decode7, decode_out6, decode_mask6, img, mask)
 
-        return img_out, mask_out.float
+        return img_out
 
     def forward_encode_block(self, operation, img_tensor, mask_tensor, use_batchnorm=False):
         """
