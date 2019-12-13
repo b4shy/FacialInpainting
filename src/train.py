@@ -19,11 +19,15 @@ parser.add_argument('--mask_path', help='path to image folder (up to train or te
                     default='../dat/qd_imd/train/')
 parser.add_argument('--checkpoint_path', help='path to store the checkpoints',
                     default='../dat/qd_imd/train/')
+parser.add_argument('--batch_size', help='batch Size',
+                    default=16)
+
 
 args = parser.parse_args()
 faces_path = args.img_path
 mask_path = args.mask_path
 checkpoint_path = args.checkpoint_path
+batch_size = args.batch_size
 
 use_cuda = torch.cuda.is_available()
 cuda_device_count = torch.cuda.device_count()
@@ -38,7 +42,7 @@ if cuda_device_count > 1:
 
 NET.to(device)
 
-params = {'batch_size': 8,
+params = {'batch_size': batch_size,
           'shuffle': True,
           'num_workers': 4}
 
@@ -51,7 +55,7 @@ validation_set = Dataset(mask_path='../dat/qd_imd/test/')
 validation_generator = data.DataLoader(validation_set, **params)
 
 
-opt = torch.optim.Adam(NET.parameters(), lr=0.0002)
+opt = torch.optim.Adam(NET.parameters(), lr=1e-5)
 NET.train()
 
 writer = SummaryWriter()
