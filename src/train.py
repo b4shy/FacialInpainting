@@ -75,7 +75,9 @@ for epoch in range(max_epochs):
         mask = batch["mask"].to(device).float()
         image = batch["image"].to(device)
         pred = NET(masked_img, mask)
-        actual_loss = loss.l1_loss(pred, image, device)
+        loss_hole = loss.l_hole(pred, image, mask, device)
+        loss_valid = loss.l_valid(pred, image, mask, device)
+        actual_loss = loss_valid + 6*loss_hole
 
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
