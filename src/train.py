@@ -23,6 +23,8 @@ parser.add_argument('--batch_size', help='batch Size', type=int,
                     default=2)
 parser.add_argument('--learning_rate', help='Learning Rate', type=float,
                     default=5e-5)
+parser.add_argument('--train_from_checkpoint', help='Path to checkpoint',
+                    default= None)
 
 
 args = parser.parse_args()
@@ -31,6 +33,7 @@ mask_path = args.mask_path
 checkpoint_path = args.checkpoint_path
 batch_size = args.batch_size
 learning_rate = args.learning_rate
+train_from_checkpoint = args.train_from_checkpoint
 
 use_cuda = torch.cuda.is_available()
 cuda_device_count = torch.cuda.device_count()
@@ -38,6 +41,8 @@ print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe()
+if train_from_checkpoint:
+    NET.load_state_dict(torch.load(train_from_checkpoint))
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
@@ -72,7 +77,7 @@ for epoch in range(max_epochs):
         pred = NET(masked_img, mask)
         actual_loss = loss.l1_loss(pred, image, device)
 
-        if GLOBAL_STEP % 1000 == 0:
+        if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
 
             grids = create_grids(masked_img, pred)

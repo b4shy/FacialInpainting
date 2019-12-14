@@ -2,6 +2,7 @@
 Prediction Demo
 """
 
+from collections import OrderedDict
 import time
 import cv2
 import matplotlib.pyplot as plt
@@ -23,8 +24,18 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 net = DeFINe()
 net.to(device)
-net.load_state_dict(torch.load("../ckt/0", map_location=torch.device('cpu')))
 net.eval()
+
+state_dict = torch.load("../ckt/17", map_location=torch.device('cpu'))
+
+new_state_dict = OrderedDict()
+for k, v in state_dict.items():
+    name = k[7:] # remove module.
+    new_state_dict[name] = v
+
+
+
+net.load_state_dict(new_state_dict)
 
 masked_image = masked_image.reshape(1, 512, 512, 3)
 masked_image = torch.tensor(masked_image).float()
