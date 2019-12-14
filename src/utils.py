@@ -2,30 +2,29 @@
 Utils for tensorboard etc
 """
 import torchvision
+import torch
 
 
-def create_grids(masked_imgs, predicted_imgs):
+def create_grid(masked_imgs, predicted_imgs):
     """
     masked_imgs: masked input image
     predicted_imgs: predicted images from the Network
     """
     masked_img_permute = masked_imgs.permute(0, 3, 1, 2)
-    grid_masked_image = torchvision.utils.make_grid(masked_img_permute)
-    grid_predicted_image = torchvision.utils.make_grid(predicted_imgs)
-    return grid_masked_image, grid_predicted_image
+    concatted_images = torch.cat((predicted_imgs, masked_img_permute), 2)
+    grid = torchvision.utils.make_grid(concatted_images)
+    return grid
 
 
-def write_to_tensorboard(writer, grids, actual_loss, GLOBAL_STEP):
+def write_to_tensorboard(writer, grid, actual_loss, GLOBAL_STEP):
     """
     :param writer: Tensorboard writer
-    :param grids: Image Grids, None if only the loss shall be added
+    :param grid: Image Grid, None if only the loss shall be added
     :param actual_loss: actual loss
     :param GLOBAL_STEP: Actual Step
     :return: Nothing
     """
 
-    if grids:
-        masked_grid, predicted_grid = grids
-        writer.add_image("images", masked_grid, global_step=GLOBAL_STEP)
-        writer.add_image("Predictions", predicted_grid, global_step=GLOBAL_STEP)
+    if grid is not None:
+        writer.add_image("Predictions and Inputs", grid, global_step=GLOBAL_STEP)
     writer.add_scalar('Loss', actual_loss, global_step=GLOBAL_STEP)

@@ -7,7 +7,7 @@ import os
 from torch.utils import data
 from torch.utils.tensorboard import SummaryWriter
 import torch
-from utils import create_grids, write_to_tensorboard
+from utils import create_grid, write_to_tensorboard
 import loss
 from model import DeFINe
 from loader import Dataset
@@ -80,8 +80,8 @@ for epoch in range(max_epochs):
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
 
-            grids = create_grids(masked_img, pred)
-            write_to_tensorboard(writer, grids, actual_loss, GLOBAL_STEP)
+            grid = create_grid(masked_img, pred)
+            write_to_tensorboard(writer, grid, actual_loss, GLOBAL_STEP)
 
         write_to_tensorboard(writer, None, actual_loss, GLOBAL_STEP)
         actual_loss.backward()
