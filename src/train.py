@@ -24,7 +24,7 @@ parser.add_argument('--batch_size', help='batch Size', type=int,
 parser.add_argument('--learning_rate', help='Learning Rate', type=float,
                     default=5e-5)
 parser.add_argument('--train_from_checkpoint', help='Path to checkpoint',
-                    default= None)
+                    default=None)
 
 
 args = parser.parse_args()
