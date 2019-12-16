@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import torch
 from model import DeFINe
 
-img0_path = f'../dat/0.png'
+img0_path = f'../dat/2.png'
 mask0_path = f'../dat/mask_00000_train.png'
 image = cv2.imread(img0_path)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -17,6 +17,8 @@ image = cv2.resize(image, (512, 512))
 image = image / 255  # Normalize
 
 mask = cv2.imread(mask0_path)
+mask = cv2.rotate(mask, cv2.ROTATE_90_CLOCKWISE)
+
 masked_image = image.copy()
 masked_image[mask == 0] = 1
 
@@ -26,7 +28,7 @@ net = DeFINe()
 net.to(device)
 net.eval()
 
-state_dict = torch.load("../ckt/20", map_location=torch.device('cpu'))
+state_dict = torch.load("../ckt/37", map_location=torch.device('cpu'))
 
 new_state_dict = OrderedDict()
 for k, v in state_dict.items():
