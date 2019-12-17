@@ -41,12 +41,14 @@ print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe()
-if train_from_checkpoint:
-    NET.load_state_dict(torch.load(train_from_checkpoint))
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
     NET = torch.nn.DataParallel(NET)
+
+if train_from_checkpoint:
+    NET.load_state_dict(torch.load(train_from_checkpoint))
+
 
 NET.to(device)
 
@@ -75,9 +77,10 @@ for epoch in range(max_epochs):
         mask = batch["mask"].to(device).float()
         image = batch["image"].to(device)
         pred = NET(masked_img, mask)
-        loss_hole = loss.l_hole(pred, image, mask, device)
-        loss_valid = loss.l_valid(pred, image, mask, device)
-        actual_loss = loss_valid + 6*loss_hole
+        # loss_hole = loss.l_hole(pred, image, mask, device)
+        # loss_valid = loss.l_valid(pred, image, mask, device)
+        # actual_loss = loss_valid + 6*loss_hole
+        actual_loss = loss.l1_loss(pred, image, device)
 
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
