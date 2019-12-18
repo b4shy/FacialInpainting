@@ -3,7 +3,6 @@ Implement all the losses needed for the Inpainting.
 """
 import torch
 
-
 def l1_loss(prediction, orig_image, device):
     """
     Calculates normal l1 loss
@@ -45,3 +44,18 @@ def l_valid(prediction, orig_image, mask, device):
     pp_gt = mask_permuted * img_permuted
     pp_pred = mask_permuted * prediction
     return torch.nn.L1Loss()(pp_gt, pp_pred)
+
+
+def l_perceptual(vgg16_model, prediction, image, mask):
+    image_permuted = image.permute(0, 3, 1, 2).float()
+    mask_permuted = mask.permute(0, 3, 1, 2)
+
+    vgg16_gt_out = vgg16_model(image_permuted)
+    vgg16_pred_out = vgg16_model(prediction)
+    comp = mask_permuted * image_permuted + (1-mask_permuted)*prediction
+    vgg16_comp_out = vgg16_model(comp)
+    loss = 0
+    for pred, gt, cmp in zip(vgg16_pred_out, vgg16_gt_out, vgg16_comp_out):
+        loss += (torch.nn.L1Loss()(pred, gt) + torch.nn.L1Loss()(cmp, gt))
+
+    return loss

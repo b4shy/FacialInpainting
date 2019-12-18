@@ -2,6 +2,7 @@
 Train the model
 """
 
+import time
 import argparse
 import os
 from torch.utils import data
@@ -9,7 +10,7 @@ from torch.utils.tensorboard import SummaryWriter
 import torch
 from utils import create_grid, write_to_tensorboard
 import loss
-from model import DeFINe
+from model import DeFINe, VGG16Partial
 from loader import Dataset
 
 parser = argparse.ArgumentParser(description="Path to face images and masks")
@@ -20,7 +21,7 @@ parser.add_argument('--mask_path', help='path to image folder (up to train or te
 parser.add_argument('--checkpoint_path', help='path to store the checkpoints',
                     default='../dat/qd_imd/train/')
 parser.add_argument('--batch_size', help='batch Size', type=int,
-                    default=2)
+                    default=1)
 parser.add_argument('--learning_rate', help='Learning Rate', type=float,
                     default=5e-5)
 parser.add_argument('--train_from_checkpoint', help='Path to checkpoint',
@@ -44,13 +45,15 @@ NET = DeFINe()
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
-    NET = torch.nn.DataParallel(NET)
+    NET = torch.nn.DataParallel(NET, device_ids=)
 
 if train_from_checkpoint:
     NET.load_state_dict(torch.load(train_from_checkpoint))
 
 
 NET.to(device)
+vgg16_partial = VGG16Partial()
+vgg16_partial.to(device)
 
 params = {'batch_size': batch_size,
           'shuffle': True,
@@ -70,6 +73,7 @@ NET.train()
 
 writer = SummaryWriter()
 GLOBAL_STEP = 0
+
 for epoch in range(max_epochs):
     for batch in training_generator:
         opt.zero_grad()
@@ -77,14 +81,15 @@ for epoch in range(max_epochs):
         mask = batch["mask"].to(device).float()
         image = batch["image"].to(device)
         pred = NET(masked_img, mask)
-        # loss_hole = loss.l_hole(pred, image, mask, device)
-        # loss_valid = loss.l_valid(pred, image, mask, device)
-        # actual_loss = loss_valid + 6*loss_hole
-        actual_loss = loss.l1_loss(pred, image, device)
+
+        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask)
+        loss_hole = loss.l_hole(pred, image, mask, device)
+        loss_valid = loss.l_valid(pred, image, mask, device)
+        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss
+        # actual_loss = loss.l1_loss(pred, image, device)
 
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
-
             grid = create_grid(masked_img, pred)
             write_to_tensorboard(writer, grid, actual_loss, GLOBAL_STEP)
 

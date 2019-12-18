@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 from partialconv2d import PartialConv2d
 from torch.nn.init import kaiming_normal_
+import torchvision
 
 
 class DeFINe(nn.Module):
@@ -102,7 +103,7 @@ class DeFINe(nn.Module):
         """
         Inference on image
         :param masked_image: batch of tensors [b, 3, h, w]
-        :param mask_input: batch of masks [b, 3, h, w]
+        :param input_mask: batch of masks [b, 3, h, w]
         :return: tensor with inpainted image [b, 3, h, w]
         """
         img = masked_image.permute(0, 3, 1, 2)
@@ -135,15 +136,16 @@ class DeFINe(nn.Module):
 
         return img_out
 
-    def forward_encode_block(self, operation, img_tensor, mask_tensor, batch_norm_op):
+    @staticmethod
+    def forward_encode_block(operation, img_tensor, mask_tensor, batch_norm_op):
         """
         Runs one operation from the encode block
         Runs ReLU and (maybe)BatchNorm on Conv Output
         :param operation: Convolution Operation
         :param img_tensor: Image Output from last block
         :param mask_tensor: Mask Output from last block
-        :param use_batchnorm: Use BatchNorm?
-        :return:
+        :param batch_norm_op: Use above defined batchnorm. None if no batchnorm shall be applied
+        :return: Operation Result
         """
 
         out, mask = operation(img_tensor, mask_tensor)
@@ -151,8 +153,8 @@ class DeFINe(nn.Module):
             out = batch_norm_op(out)
         return nn.ReLU()(out), mask
 
-    def forward_decode_block(self, operation, img_tensor, mask_tensor, concat_with_img, concat_with_mask,
-                             batch_norm_op):
+    @staticmethod
+    def forward_decode_block( operation, img_tensor, mask_tensor, concat_with_img, concat_with_mask, batch_norm_op):
         """
         Runs one operation from the decode block
         First Upsamples with
@@ -163,8 +165,8 @@ class DeFINe(nn.Module):
         :param mask_tensor: Mask Output from last block
         :param concat_with_img: Concatenate with what layer?
         :param concat_with_mask: Concatenate with what layer?
-        :param use_batchnorm:
-        :return:
+        :param batch_norm_op: Use above defined batchnorm. None if no batchnorm shall be applied
+        :return: Operation Result
         """
         upsampled_img_tensor = nn.Upsample(scale_factor=2, mode="nearest")(img_tensor)
         upsampled_mask_tensor = nn.Upsample(scale_factor=2, mode="nearest")(mask_tensor)
@@ -176,3 +178,53 @@ class DeFINe(nn.Module):
             out = batch_norm_op(out)
         return nn.LeakyReLU(0.2)(out), mask
 
+
+class VGG16Partial(nn.Module):
+    """
+    Partial VGG16 Model. It returns the feature maps corresponding to the paper. (MaxPool1, MaxPool2, MaxPool3)
+    """
+    def __init__(self):
+        super().__init__()
+        self.vgg = torchvision.models.vgg16(pretrained=True)
+        self.vgg = self.vgg
+        self.vgg.features[4].register_forward_hook(self.hook)
+        self.vgg.features[9].register_forward_hook(self.hook)
+        self.vgg.features[16].register_forward_hook(self.hook)
+        for param in self.vgg.parameters():
+            param.requires_grad = False
+
+        self.outputs = []
+
+    def forward(self, x):
+        """
+        :param x: Image Batch
+        :returns: Output of the three max-pools
+        """
+        self.outputs = []
+        x_norm = self.normalize(x)
+        self.vgg(x_norm)
+        return self.outputs
+
+    def hook(self, module, input, output):
+        """
+        Hook which appends the output to the output list
+        """
+        self.outputs.append(output)
+
+    @staticmethod
+    def normalize(x):
+        """
+        Normalize according to image Net (VGG is trained on it)
+        """
+        x_norm = x / 255
+        mean = x.data.new(x.data.size())
+        std = x.data.new(x.data.size())
+        mean[:, 0, :, :] = 0.485
+        mean[:, 1, :, :] = 0.456
+        mean[:, 2, :, :] = 0.406
+        std[:, 0, :, :] = 0.229
+        std[:, 1, :, :] = 0.224
+        std[:, 2, :, :] = 0.225
+        x_norm = x_norm - mean
+        x_norm = x_norm / std
+        return x_norm
