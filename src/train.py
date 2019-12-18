@@ -1,7 +1,6 @@
 """
 Train the model
 """
-
 import time
 import argparse
 import os
@@ -45,7 +44,7 @@ NET = DeFINe()
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
-    NET = torch.nn.DataParallel(NET, device_ids=)
+    NET = torch.nn.DataParallel(NET)
 
 if train_from_checkpoint:
     NET.load_state_dict(torch.load(train_from_checkpoint))
@@ -80,14 +79,14 @@ for epoch in range(max_epochs):
         masked_img = batch["masked_image"].to(device).float()
         mask = batch["mask"].to(device).float()
         image = batch["image"].to(device)
+        print("before")
         pred = NET(masked_img, mask)
-
-        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask)
+        print("After")
+        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, vgg_device)
         loss_hole = loss.l_hole(pred, image, mask, device)
         loss_valid = loss.l_valid(pred, image, mask, device)
         actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss
         # actual_loss = loss.l1_loss(pred, image, device)
-
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
             grid = create_grid(masked_img, pred)

@@ -46,13 +46,19 @@ def l_valid(prediction, orig_image, mask, device):
     return torch.nn.L1Loss()(pp_gt, pp_pred)
 
 
-def l_perceptual(vgg16_model, prediction, image, mask):
-    image_permuted = image.permute(0, 3, 1, 2).float()
-    mask_permuted = mask.permute(0, 3, 1, 2)
-
+def l_perceptual(vgg16_model, prediction, image, mask, device):
+    image_permuted = image.permute(0, 3, 1, 2).float().to(device)
+    mask_permuted = mask.permute(0, 3, 1, 2).to(device)
+    pred = prediction.to(device)
     vgg16_gt_out = vgg16_model(image_permuted)
-    vgg16_pred_out = vgg16_model(prediction)
-    comp = mask_permuted * image_permuted + (1-mask_permuted)*prediction
+    torch.cuda.empty_cache()
+
+    vgg16_pred_out = vgg16_model(pred)
+    torch.cuda.empty_cache()
+
+    comp = mask_permuted * image_permuted + (1-mask_permuted)*pred
+    torch.cuda.empty_cache()
+
     vgg16_comp_out = vgg16_model(comp)
     loss = 0
     for pred, gt, cmp in zip(vgg16_pred_out, vgg16_gt_out, vgg16_comp_out):

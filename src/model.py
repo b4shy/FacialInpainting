@@ -186,11 +186,13 @@ class VGG16Partial(nn.Module):
     def __init__(self):
         super().__init__()
         self.vgg = torchvision.models.vgg16(pretrained=True)
-        self.vgg = self.vgg
-        self.vgg.features[4].register_forward_hook(self.hook)
-        self.vgg.features[9].register_forward_hook(self.hook)
-        self.vgg.features[16].register_forward_hook(self.hook)
-        for param in self.vgg.parameters():
+        self.vgg_cutted = torch.nn.Sequential(*[self.vgg.features[i] for i in range(17)])
+
+        self.vgg_cutted[4].register_forward_hook(self.hook)
+        self.vgg_cutted[9].register_forward_hook(self.hook)
+        self.vgg_cutted[16].register_forward_hook(self.hook)
+
+        for param in self.vgg_cutted.parameters():
             param.requires_grad = False
 
         self.outputs = []
@@ -202,7 +204,7 @@ class VGG16Partial(nn.Module):
         """
         self.outputs = []
         x_norm = self.normalize(x)
-        self.vgg(x_norm)
+        self.vgg_cutted(x_norm)
         return self.outputs
 
     def hook(self, module, input, output):
