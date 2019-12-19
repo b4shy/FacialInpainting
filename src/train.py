@@ -41,18 +41,21 @@ print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe()
+vgg16_partial = VGG16Partial()
+
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
     NET = torch.nn.DataParallel(NET)
+    vgg16_partial = torch.nn.DataParallel(vgg16_partial)
 
 if train_from_checkpoint:
     NET.load_state_dict(torch.load(train_from_checkpoint))
 
 
 NET.to(device)
-vgg16_partial = VGG16Partial()
 vgg16_partial.to(device)
+
 
 params = {'batch_size': batch_size,
           'shuffle': True,
@@ -82,7 +85,7 @@ for epoch in range(max_epochs):
         print("before")
         pred = NET(masked_img, mask)
         print("After")
-        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, vgg_device)
+        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, device)
         loss_hole = loss.l_hole(pred, image, mask, device)
         loss_valid = loss.l_valid(pred, image, mask, device)
         actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss
