@@ -233,34 +233,49 @@ class VGG16Partial(nn.Module):
 
 
 class Vgg16(torch.nn.Module):
-    def __init__(self, requires_grad=False):
+    def __init__(self):
         super(Vgg16, self).__init__()
         vgg_pretrained_features = torchvision.models.vgg16(pretrained=True).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()
         self.slice4 = torch.nn.Sequential()
-        for x in range(4):
+        for x in range(5):
             self.slice1.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(4, 9):
+        for x in range(5, 10):
             self.slice2.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(9, 16):
+        for x in range(10, 17):
             self.slice3.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(16, 23):
-            self.slice4.add_module(str(x), vgg_pretrained_features[x])
-        if not requires_grad:
-            for param in self.parameters():
-                param.requires_grad = False
+        for param in self.parameters():
+            param.requires_grad = False
 
     def forward(self, X):
+        X = self.normalize(X)
         h = self.slice1(X)
-        h_relu1_2 = h
+        h_maxpool_1 = h
         h = self.slice2(h)
-        h_relu2_2 = h
+        h_maxpool_2 = h
         h = self.slice3(h)
-        h_relu3_3 = h
-        h = self.slice4(h)
-        h_relu4_3 = h
-        vgg_outputs = namedtuple("VggOutputs", ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3'])
-        out = vgg_outputs(h_relu1_2, h_relu2_2, h_relu3_3, h_relu4_3)
+        h_maxpool_3 = h
+        vgg_outputs = namedtuple("VggOutputs", ['maxpool_1', 'maxpool_2', 'maxpool_3'])
+        out = vgg_outputs(h_maxpool_1, h_maxpool_2, h_maxpool_3)
         return out
+
+    @staticmethod
+    def normalize(x):
+        """
+        Normalize according to image Net (VGG is trained on it)
+        """
+        x_norm = x / 255
+        mean = x.data.new(x.data.size())
+        std = x.data.new(x.data.size())
+        mean[:, 0, :, :] = 0.485
+        mean[:, 1, :, :] = 0.456
+        mean[:, 2, :, :] = 0.406
+        std[:, 0, :, :] = 0.229
+        std[:, 1, :, :] = 0.224
+        std[:, 2, :, :] = 0.225
+        x_norm = x_norm - mean
+        x_norm = x_norm / std
+        return x_norm
+

@@ -1,7 +1,6 @@
 """
 Train the model
 """
-import time
 import argparse
 import os
 from torch.utils import data
@@ -9,7 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 import torch
 from utils import create_grid, write_to_tensorboard
 import loss
-from model import DeFINe, VGG16Partial
+from model import DeFINe, Vgg16
 from loader import Dataset
 
 parser = argparse.ArgumentParser(description="Path to face images and masks")
@@ -41,7 +40,7 @@ print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe()
-vgg16_partial = VGG16Partial()
+vgg16_partial = Vgg16()
 
 
 if cuda_device_count > 1:
