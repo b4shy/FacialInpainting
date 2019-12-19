@@ -60,6 +60,8 @@ def l_perceptual(vgg16_model, prediction, image, mask, device):
     torch.cuda.empty_cache()
 
     vgg16_comp_out = vgg16_model(comp)
+    torch.cuda.empty_cache()
+
     loss = 0
     for pred, gt, cmp in zip(vgg16_pred_out, vgg16_gt_out, vgg16_comp_out):
         loss += (torch.nn.L1Loss()(pred, gt) + torch.nn.L1Loss()(cmp, gt))
