@@ -22,7 +22,6 @@ def write_to_tensorboard(writer, grid, actual_loss, GLOBAL_STEP):
     :param grid: Image Grid, None if only the loss shall be added
     :param actual_loss: actual loss
     :param GLOBAL_STEP: Actual Step
-    :return: Nothing
     """
 
     if grid is not None:
