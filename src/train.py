@@ -13,9 +13,9 @@ from loader import Dataset
 
 parser = argparse.ArgumentParser(description="Path to face images and masks")
 parser.add_argument('--img_path', help='path to image folder (up to images512x512)',
-                    default='../dat/Faces/ffhq-dataset/images512x512/')
+                    default='/home/marci/mockdata/Faces/ffhq-dataset/images512x512')
 parser.add_argument('--mask_path', help='path to image folder (up to train or test)',
-                    default='../dat/qd_imd/train/')
+                    default='/home/marci/mockdata/qd_imd/train')
 parser.add_argument('--checkpoint_path', help='path to store the checkpoints',
                     default='../dat/qd_imd/train/')
 parser.add_argument('--batch_size', help='batch Size', type=int,
@@ -40,20 +40,20 @@ print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe()
-vgg16_partial = Vgg16()
+# vgg16_partial = Vgg16()
 
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
     NET = torch.nn.DataParallel(NET)
-    vgg16_partial = torch.nn.DataParallel(vgg16_partial)
+    # vgg16_partial = torch.nn.DataParallel(vgg16_partial)
 
 if train_from_checkpoint:
     NET.load_state_dict(torch.load(train_from_checkpoint))
 
 
 NET.to(device)
-vgg16_partial.to(device)
+# vgg16_partial.to(device)
 
 
 params = {'batch_size': batch_size,
@@ -65,8 +65,8 @@ max_epochs = 200
 training_set = Dataset(faces_path=faces_path, mask_path=mask_path)
 training_generator = data.DataLoader(training_set, **params)
 
-validation_set = Dataset(mask_path='../dat/qd_imd/test/')
-validation_generator = data.DataLoader(validation_set, **params)
+# validation_set = Dataset(mask_path='../dat/qd_imd/test/')
+# validation_generator = data.DataLoader(validation_set, **params)
 
 
 opt = torch.optim.Adam(NET.parameters(), lr=learning_rate)
@@ -81,13 +81,12 @@ for epoch in range(max_epochs):
         masked_img = batch["masked_image"].to(device).float()
         mask = batch["mask"].to(device).float()
         image = batch["image"].to(device)
-        print("before")
         pred = NET(masked_img, mask)
-        print("After")
-        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, device)
+
+        # perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, device)
         loss_hole = loss.l_hole(pred, image, mask, device)
         loss_valid = loss.l_valid(pred, image, mask, device)
-        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss
+        actual_loss = loss_valid + 6*loss_hole # + 0.05*perceptual_loss
         # actual_loss = loss.l1_loss(pred, image, device)
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)

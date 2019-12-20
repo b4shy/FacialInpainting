@@ -19,11 +19,9 @@ class Dataset(data.Dataset):
         :param faces_path: path to faces
         :param mask_path: path to masks
         """
-        actual_file_path = os.path.dirname(os.path.abspath(__file__))
 
-        self.faces_path = os.path.join(actual_file_path, faces_path)
-
-        self.mask_path = os.path.join(actual_file_path, mask_path)
+        self.faces_path = faces_path
+        self.mask_path = mask_path
         self.full_faces_path = []
         self.full_mask_path = []
         self.load_faces_paths()
@@ -54,6 +52,7 @@ class Dataset(data.Dataset):
         rnd_mask_index = random.randrange(0, len(self.full_mask_path))
         mask_id = self.full_mask_path[rnd_mask_index]
         mask = cv2.imread(mask_id)
+        mask = mask / 255  # Normalize
         masked_image = self.overlay_mask(image, mask)
 
         sample = {"image": image, "masked_image": masked_image, "mask": mask}
