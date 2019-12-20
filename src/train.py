@@ -7,7 +7,7 @@ from torch.utils import data
 from torch.utils.tensorboard import SummaryWriter
 import torch
 from utils import create_grid, write_to_tensorboard
-import loss
+from loss import Loss
 from model import DeFINe, Vgg16
 from loader import Dataset
 
@@ -58,7 +58,7 @@ vgg16_partial.to(device)
 
 params = {'batch_size': batch_size,
           'shuffle': True,
-          'num_workers': 0}  # 0 for GPU debugging
+          'num_workers': 4}  # 0 for GPU debugging
 
 max_epochs = 200
 
@@ -71,9 +71,11 @@ training_generator = data.DataLoader(training_set, **params)
 
 opt = torch.optim.Adam(NET.parameters(), lr=learning_rate)
 NET.train()
+loss = Loss(vgg16_partial)
 
 writer = SummaryWriter()
 GLOBAL_STEP = 0
+
 
 for epoch in range(max_epochs):
     for batch in training_generator:
@@ -82,11 +84,15 @@ for epoch in range(max_epochs):
         mask = batch["mask"].to(device).float()
         image = batch["image"].to(device)
         pred = NET(masked_img, mask)
-        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, device)
-        loss_hole = loss.l_hole(pred, image, mask, device)
-        loss_valid = loss.l_valid(pred, image, mask, device)
-        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss
-        # actual_loss = loss.l1_loss(pred, image, device)
+
+        loss.prepare_loss_calculation(pred, image, mask)
+        loss_hole = loss.calculate_loss_hole()
+        loss_valid = loss.calculate_loss_valid()
+        perceptual_loss = loss.calculate_perceptual_loss()
+        style_loss_out = loss.calculate_style_out_loss()
+        style_loss_comp = loss.calculate_style_comp_loss()
+        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss + 120*(style_loss_out + style_loss_comp)
+
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
             grid = create_grid(masked_img, pred)

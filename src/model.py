@@ -217,6 +217,8 @@ class VGG16Partial(nn.Module):
     def normalize(x):
         """
         Normalize according to image Net (VGG is trained on it)
+        :param x: Input batch
+        :returns: The normalized Input Batch according to ImageNet
         """
         x_norm = x / 255
         mean = x.data.new(x.data.size())
@@ -233,7 +235,16 @@ class VGG16Partial(nn.Module):
 
 
 class Vgg16(torch.nn.Module):
+    """
+    Partial VGG16 Model.
+    Code expanded with Normalization and adapted Output from the pytorch example:
+    https://github.com/pytorch/examples/blob/master/fast_neural_style/neural_style/vgg.py
+    Returns the 3 Max Pool Layers
+    """
     def __init__(self):
+        """
+        Creates the three slices to return the Max-Pool Outputs
+        """
         super(Vgg16, self).__init__()
         vgg_pretrained_features = torchvision.models.vgg16(pretrained=True).features
         self.slice1 = torch.nn.Sequential()
@@ -249,9 +260,14 @@ class Vgg16(torch.nn.Module):
         for param in self.parameters():
             param.requires_grad = False
 
-    def forward(self, X):
-        X = self.normalize(X)
-        h = self.slice1(X)
+    def forward(self, x):
+        """
+        Returns the three MaxPool Outputs
+        :param x: Input Batch
+        :returns: Namedtuple containing the three Maxpool outputs
+        """
+        x = self.normalize(x)
+        h = self.slice1(x)
         h_maxpool_1 = h
         h = self.slice2(h)
         h_maxpool_2 = h
@@ -265,6 +281,8 @@ class Vgg16(torch.nn.Module):
     def normalize(x):
         """
         Normalize according to image Net (VGG is trained on it)
+        :param x: Input batch
+        :returns: The normalized Input Batch according to ImageNet
         """
         x_norm = x / 255
         mean = x.data.new(x.data.size())
