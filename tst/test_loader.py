@@ -43,3 +43,13 @@ def test_overlay_image1():
     assert masked_image.sum() == 512*512*3
 
 
+def test_imgs_are_normalized():
+    assert (dataset[0]["image"].max() == 1)
+
+
+def test_masks_are_normalized():
+    assert (dataset[0]["mask"].min() == 0) and (dataset[0]["mask"].max() == 1)
+
+
+def test_masked_images_are_normalized():
+    assert (dataset[0]["masked_image"].max() == 1)
