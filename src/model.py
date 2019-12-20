@@ -110,28 +110,28 @@ class DeFINe(nn.Module):
         mask = input_mask.permute(0, 3, 1, 2)
 
         out0, mask0 = self.forward_encode_block(self.encode0, img, mask, None)
-        out1, mask1 = self.forward_encode_block(self.encode1, out0, mask0, None)
-        out2, mask2 = self.forward_encode_block(self.encode2, out1, mask1, None)
-        out3, mask3 = self.forward_encode_block(self.encode3, out2, mask2, None)
-        out4, mask4 = self.forward_encode_block(self.encode4, out3, mask3, None)
-        out5, mask5 = self.forward_encode_block(self.encode5, out4, mask4, None)
-        out6, mask6 = self.forward_encode_block(self.encode6, out5, mask5, None)
-        out7, mask7 = self.forward_encode_block(self.encode7, out6, mask6, None)
+        out1, mask1 = self.forward_encode_block(self.encode1, out0, mask0, self.batchnorm1)
+        out2, mask2 = self.forward_encode_block(self.encode2, out1, mask1, self.batchnorm2)
+        out3, mask3 = self.forward_encode_block(self.encode3, out2, mask2, self.batchnorm3)
+        out4, mask4 = self.forward_encode_block(self.encode4, out3, mask3, self.batchnorm4)
+        out5, mask5 = self.forward_encode_block(self.encode5, out4, mask4, self.batchnorm5)
+        out6, mask6 = self.forward_encode_block(self.encode6, out5, mask5, self.batchnorm6)
+        out7, mask7 = self.forward_encode_block(self.encode7, out6, mask6, self.batchnorm7)
 
         decode_out0, decode_mask0 = self.forward_decode_block(self.decode0, out7, mask7,
-                                                              out6, mask6, None)
+                                                              out6, mask6, self.batchnorm8)
         decode_out1, decode_mask1 = self.forward_decode_block(self.decode1, decode_out0, decode_mask0,
-                                                              out5, mask5, None)
+                                                              out5, mask5, self.batchnorm9)
         decode_out2, decode_mask2 = self.forward_decode_block(self.decode2, decode_out1, decode_mask1,
-                                                              out4, mask4, None)
+                                                              out4, mask4, self.batchnorm10)
         decode_out3, decode_mask3 = self.forward_decode_block(self.decode3, decode_out2, decode_mask2,
-                                                              out3, mask3, None)
+                                                              out3, mask3, self.batchnorm11)
         decode_out4, decode_mask4 = self.forward_decode_block(self.decode4, decode_out3, decode_mask3,
-                                                              out2, mask2, None)
+                                                              out2, mask2, self.batchnorm12)
         decode_out5, decode_mask5 = self.forward_decode_block(self.decode5, decode_out4, decode_mask4,
-                                                              out1, mask1, None)
+                                                              out1, mask1, self.batchnorm13)
         decode_out6, decode_mask6 = self.forward_decode_block(self.decode6, decode_out5, decode_mask5,
-                                                              out0, mask0, None)
+                                                              out0, mask0, self.batchnorm14)
         img_out, mask_out = self.forward_decode_block(self.decode7, decode_out6, decode_mask6, img, mask, None)
 
         return img_out
