@@ -19,7 +19,7 @@ parser.add_argument('--mask_path', help='path to image folder (up to train or te
 parser.add_argument('--checkpoint_path', help='path to store the checkpoints',
                     default='../dat/qd_imd/train/')
 parser.add_argument('--batch_size', help='batch Size', type=int,
-                    default=1)
+                    default=2)
 parser.add_argument('--learning_rate', help='Learning Rate', type=float,
                     default=5e-5)
 parser.add_argument('--train_from_checkpoint', help='Path to checkpoint',
@@ -40,25 +40,25 @@ print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe()
-# vgg16_partial = Vgg16()
+vgg16_partial = Vgg16()
 
 
 if cuda_device_count > 1:
     print("Use", cuda_device_count, "GPUs!")
     NET = torch.nn.DataParallel(NET)
-    # vgg16_partial = torch.nn.DataParallel(vgg16_partial)
+    vgg16_partial = torch.nn.DataParallel(vgg16_partial)
 
 if train_from_checkpoint:
     NET.load_state_dict(torch.load(train_from_checkpoint))
 
 
 NET.to(device)
-# vgg16_partial.to(device)
+vgg16_partial.to(device)
 
 
 params = {'batch_size': batch_size,
           'shuffle': True,
-          'num_workers': 4}
+          'num_workers': 0}  # 0 for GPU debugging
 
 max_epochs = 200
 
@@ -82,11 +82,10 @@ for epoch in range(max_epochs):
         mask = batch["mask"].to(device).float()
         image = batch["image"].to(device)
         pred = NET(masked_img, mask)
-
-        # perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, device)
+        perceptual_loss = loss.l_perceptual(vgg16_partial, pred, image, mask, device)
         loss_hole = loss.l_hole(pred, image, mask, device)
         loss_valid = loss.l_valid(pred, image, mask, device)
-        actual_loss = loss_valid + 6*loss_hole # + 0.05*perceptual_loss
+        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss
         # actual_loss = loss.l1_loss(pred, image, device)
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
