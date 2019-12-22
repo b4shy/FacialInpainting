@@ -24,6 +24,8 @@ parser.add_argument('--learning_rate', help='Learning Rate', type=float,
                     default=5e-5)
 parser.add_argument('--train_from_checkpoint', help='Path to checkpoint',
                     default=None)
+parser.add_argument('--logdir', help='Path to Tensorboard Logs',
+                    default="~/runs/default")
 
 
 args = parser.parse_args()
@@ -33,6 +35,7 @@ checkpoint_path = args.checkpoint_path
 batch_size = args.batch_size
 learning_rate = args.learning_rate
 train_from_checkpoint = args.train_from_checkpoint
+logdir = args.logdir
 
 use_cuda = torch.cuda.is_available()
 cuda_device_count = torch.cuda.device_count()
@@ -73,7 +76,7 @@ opt = torch.optim.Adam(NET.parameters(), lr=learning_rate)
 NET.train()
 loss = Loss(vgg16_partial)
 
-writer = SummaryWriter()
+writer = SummaryWriter(logdir)
 GLOBAL_STEP = 0
 
 
@@ -91,7 +94,7 @@ for epoch in range(max_epochs):
         perceptual_loss = loss.calculate_perceptual_loss()
         style_loss_out = loss.calculate_style_out_loss()
         style_loss_comp = loss.calculate_style_comp_loss()
-        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss + 120*(style_loss_out + style_loss_comp)
+        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss #+ 120*(style_loss_out + style_loss_comp)
 
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
