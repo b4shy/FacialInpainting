@@ -111,25 +111,3 @@ class Loss():
         gram = features.bmm(features_t) / (ch * h * w)
         return gram
 
-
-def l_perceptual(vgg16_model, prediction, image, mask, device):
-    image_permuted = image.permute(0, 3, 1, 2).float().to(device)
-    mask_permuted = mask.permute(0, 3, 1, 2).to(device)
-    pred = prediction.to(device)
-    vgg16_gt_out = vgg16_model(image_permuted)
-    torch.cuda.empty_cache()
-
-    vgg16_pred_out = vgg16_model(pred)
-    torch.cuda.empty_cache()
-
-    comp = mask_permuted * image_permuted + (1-mask_permuted)*pred
-    torch.cuda.empty_cache()
-
-    vgg16_comp_out = vgg16_model(comp)
-    torch.cuda.empty_cache()
-
-    loss = 0
-    for pred, gt, cmp in zip(vgg16_pred_out, vgg16_gt_out, vgg16_comp_out):
-        loss += (torch.nn.L1Loss()(pred, gt) + torch.nn.L1Loss()(cmp, gt))
-
-    return loss
