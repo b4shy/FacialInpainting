@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import torch
 from model import DeFINe
 
-img0_path = f'../dat/0.png'
-mask0_path = f'../dat/mask_00000_train.png'
+img0_path = f'../dat/1.png'
+mask0_path = f'../dat/mask_00129_test.png'
 image = cv2.imread(img0_path)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 image = cv2.resize(image, (512, 512))
@@ -29,16 +29,16 @@ net = DeFINe()
 net.to(device)
 net.eval()
 
-state_dict = torch.load("../ckt/14", map_location=torch.device('cpu'))
+state_dict = torch.load("../ckt/20", map_location=torch.device('cpu'))
+net.load_state_dict(state_dict)
+#new_state_dict = OrderedDict()
+#for k, v in state_dict.items():
+#    name = k[7:] # remove module.
+#    new_state_dict[name] = v
 
-new_state_dict = OrderedDict()
-for k, v in state_dict.items():
-    name = k[7:] # remove module.
-    new_state_dict[name] = v
 
 
-
-net.load_state_dict(new_state_dict)
+#net.load_state_dict(new_state_dict)
 
 masked_image = masked_image.reshape(1, 512, 512, 3)
 masked_image = torch.tensor(masked_image).float().to(device)
