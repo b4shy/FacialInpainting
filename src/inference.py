@@ -37,14 +37,12 @@ net.eval()
 
 state_dict = torch.load(ckt_path, map_location=torch.device('cpu'))
 net.load_state_dict(state_dict)
-#new_state_dict = OrderedDict()
-#for k, v in state_dict.items():
+# new_state_dict = OrderedDict()
+# for k, v in state_dict.items():
 #    name = k[7:] # remove module.
 #    new_state_dict[name] = v
 
-
-
-#net.load_state_dict(new_state_dict)
+# net.load_state_dict(new_state_dict)
 
 masked_image = masked_image.reshape(1, 512, 512, 3)
 masked_image = torch.tensor(masked_image).float().to(device)
@@ -60,13 +58,17 @@ fig, axis = plt.subplots(2, 2, figsize=(10, 10))
 
 axis[0][0].imshow(mask[0].cpu())
 axis[0][0].set_title("Mask")
+axis[0][0].axis("off")
+
 axis[0][1].imshow(image)
 axis[0][1].set_title("Image")
+axis[0][1].axis("off")
 axis[1][0].imshow(masked_image[0].cpu())
 axis[1][0].set_title("Image with Mask")
+axis[1][0].axis("off")
 axis[1][1].imshow(pred[0])
 axis[1][1].set_title("Prediction")
-
+axis[1][1].axis("off")
 plt.axis('off')
 
 plt.show()
