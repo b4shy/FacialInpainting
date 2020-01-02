@@ -10,6 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 
 import ImageCrop from '../imageCrop';
+import {loadImage} from '../../actions/fileHandlingAction'
 
 const styles = theme => ({
   root: {
@@ -68,6 +69,8 @@ export default function CustomizedDialogs() {
     //TODO: Bild in Store speichern
     console.log("src", src);
     console.log("crop", crop);
+
+    loadImage(src, crop);
     setOpen(false);
   };
   const imagecropCallbackFunction = (childData) => {
