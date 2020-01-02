@@ -1,110 +1,56 @@
 import React, { Component } from 'react'
 import { IMAGE_SIZE } from '../../constants'
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import RestoreIcon from '@material-ui/icons/Restore';
-import { withStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import Slider from '@material-ui/core/Slider';
-
-const AntSwitch = withStyles(theme => ({
-    root: {
-        width: 28,
-        height: 16,
-        padding: 0,
-        display: 'flex',
-    },
-    switchBase: {
-        padding: 2,
-        color: theme.palette.grey[500],
-        '&$checked': {
-            transform: 'translateX(12px)',
-            color: theme.palette.common.white,
-            '& + $track': {
-                opacity: 1,
-                backgroundColor: theme.palette.primary.main,
-                borderColor: theme.palette.primary.main,
-            },
-        },
-    },
-    thumb: {
-        width: 12,
-        height: 12,
-        boxShadow: 'none',
-    },
-    track: {
-        border: `1px solid ${theme.palette.grey[500]}`,
-        borderRadius: 16 / 2,
-        opacity: 1,
-        backgroundColor: theme.palette.common.white,
-    },
-    checked: {},
-}))(Switch);
-
-const marks = [
-    {
-        value: 5,
-        label: '5px',
-    },
-    {
-        value: 100,
-        label: '100px',
-    },
-];
-
-function valuetext(value) {
-    return `${value}px`;
-}
-
 
 export default class index extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            image: "",
+            crop: {},
+            size: 25,
+            erase: false
+        };
+        this.canvasRef = React.createRef();
+    }
+
+    componentDidUpdate() {
+        //console.log("image:", this.props.src);
+        if (this.props.src != "") {
+            var image = new Image();
+            image.src = this.props.src;
+            //console.log(this.props.crop);
+            /*console.log(this.props.crop.x * image.width / 100,
+                this.props.crop.y * image.height / 100,
+                this.props.crop.width * image.width / 100,
+                this.props.crop.height * image.height / 100,
+                0, 
+                0,
+                IMAGE_SIZE.width,
+                IMAGE_SIZE.height);*/
+
+
+            const canvas = this.canvasRef.current;
+            const context = canvas.getContext('2d');
+            context.drawImage(
+                image, 
+                this.props.crop.x * image.width / 100,
+                this.props.crop.y * image.height / 100,
+                this.props.crop.width * image.width / 100,
+                this.props.crop.height * image.height / 100,
+                0, 
+                0,
+                IMAGE_SIZE.width,
+                IMAGE_SIZE.height
+                );
+        }
+    }
+
     render() {
+        //javascript code der bild in canvas lädt
+
         return (
-            <Grid container spacing={3}>
-                <Grid item xs={4}>
-                    <Grid item xs={12}>
-                        Stiftgröße
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Slider
-                            defaultValue={20}
-                            getAriaValueText={valuetext}
-                            step={5}
-                            valueLabelDisplay="auto"
-                            marks={marks}
-                            min={5}
-                            max={100}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid item xs={4}>
-                    <Grid component="label" container alignItems="center" spacing={1}>
-                        <Grid item>Pen</Grid>
-                        <Grid item>
-                            <AntSwitch
-                                //checked={state.checkedC}
-                                checked={false}
-                                //onChange={handleChange('checkedC')}
-                                value="checkedC"
-                            />
-                        </Grid>
-                        <Grid item>Eraser</Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={4}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<RestoreIcon />}
-                    >
-                        Reset
-                    </Button>
-                </Grid>
-                <Grid item xs={12}>
-                    <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} color='white'>
-                    </canvas>
-                </Grid>
-            </Grid>
+            <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} ref={this.canvasRef}>
+            </canvas>
         )
     }
 }

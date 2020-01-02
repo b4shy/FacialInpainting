@@ -1,21 +1,23 @@
 import React from 'react';
 import './App.css';
-import EditCanvas from './components/editCanvas';
+import Editor from './components/editor';
 import ImageLoaderModal from './components/imageLoaderModal';
-import {Provider} from 'react-redux';
-import store from './store'
-
-import Button from '@material-ui/core/Button';
-
 
 function App() {
+  const [src, setSrc] = React.useState(false);
+  const [crop, setCrop] = React.useState(false);
+
+  const imagecropCallbackFunction = (childData) => {
+    setCrop(childData.crop);
+    setSrc(childData.src);
+    console.log("image und crop gesetzt");
+  };
+
   return (
-    <Provider store={store}>
       <div className="App">
-        <EditCanvas />
-        <ImageLoaderModal/>
+        <Editor src={src} crop={crop}/>
+        <ImageLoaderModal parentCallback={imagecropCallbackFunction}/>
       </div>
-    </Provider>
   );
 }
 
