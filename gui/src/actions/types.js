@@ -1,4 +1,4 @@
-export const OPEN_LOAD_IMAGE_DIALOG = 'OPEN_LOAD_IMAGE_DIALOG';
+export const LOAD_IMAGE = 'LOAD_IMAGE';
 export const PREDICT = 'PREDICT';
 export const SET_PEN = 'SET_PEN';
 export const RESET = 'RESET';
