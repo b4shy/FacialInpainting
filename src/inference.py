@@ -2,12 +2,18 @@
 Prediction Demo
 """
 
+import argparse
 from collections import OrderedDict
 import time
 import cv2
 import matplotlib.pyplot as plt
 import torch
 from model import DeFINe
+parser = argparse.ArgumentParser(description="Path to model")
+parser.add_argument('--ckt', help="Path to checkpoint", default="../ckt/0")
+
+args = parser.parse_args()
+ckt_path = args.ckt
 
 img0_path = f'../dat/1.png'
 mask0_path = f'../dat/mask_00129_test.png'
@@ -29,7 +35,7 @@ net = DeFINe()
 net.to(device)
 net.eval()
 
-state_dict = torch.load("../ckt/20", map_location=torch.device('cpu'))
+state_dict = torch.load(ckt_path, map_location=torch.device('cpu'))
 net.load_state_dict(state_dict)
 #new_state_dict = OrderedDict()
 #for k, v in state_dict.items():
