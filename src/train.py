@@ -94,7 +94,9 @@ for epoch in range(max_epochs):
         perceptual_loss = loss.calculate_perceptual_loss()
         style_loss_out = loss.calculate_style_out_loss()
         style_loss_comp = loss.calculate_style_comp_loss()
-        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss + 120*(style_loss_out + style_loss_comp)
+        tv_loss = loss.calculate_tv_loss()
+        actual_loss = loss_valid + 6*loss_hole + 0.05*perceptual_loss + \
+                      120*(style_loss_out + style_loss_comp) + 0.1*tv_loss
 
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)

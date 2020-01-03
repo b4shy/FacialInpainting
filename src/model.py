@@ -179,61 +179,6 @@ class DeFINe(nn.Module):
         return nn.LeakyReLU(0.2)(out), mask
 
 
-class VGG16Partial(nn.Module):
-    """
-    Partial VGG16 Model. It returns the feature maps corresponding to the paper. (MaxPool1, MaxPool2, MaxPool3)
-    """
-    def __init__(self):
-        super().__init__()
-        self.vgg = torchvision.models.vgg16(pretrained=True)
-        self.vgg_cutted = torch.nn.Sequential(*[self.vgg.features[i] for i in range(17)])
-
-        self.vgg_cutted[4].register_forward_hook(self.hook)
-        self.vgg_cutted[9].register_forward_hook(self.hook)
-        self.vgg_cutted[16].register_forward_hook(self.hook)
-
-        for param in self.vgg_cutted.parameters():
-            param.requires_grad = False
-
-        self.outputs = []
-
-    def forward(self, x):
-        """
-        :param x: Image Batch
-        :returns: Output of the three max-pools
-        """
-        self.outputs = []
-        x_norm = self.normalize(x)
-        self.vgg_cutted(x_norm)
-        return self.outputs
-
-    def hook(self, module, input, output):
-        """
-        Hook which appends the output to the output list
-        """
-        self.outputs.append(output)
-
-    @staticmethod
-    def normalize(x):
-        """
-        Normalize according to image Net (VGG is trained on it)
-        :param x: Input batch
-        :returns: The normalized Input Batch according to ImageNet
-        """
-        x_norm = x / 255
-        mean = x.data.new(x.data.size())
-        std = x.data.new(x.data.size())
-        mean[:, 0, :, :] = 0.485
-        mean[:, 1, :, :] = 0.456
-        mean[:, 2, :, :] = 0.406
-        std[:, 0, :, :] = 0.229
-        std[:, 1, :, :] = 0.224
-        std[:, 2, :, :] = 0.225
-        x_norm = x_norm - mean
-        x_norm = x_norm / std
-        return x_norm
-
-
 class Vgg16(torch.nn.Module):
     """
     Partial VGG16 Model.

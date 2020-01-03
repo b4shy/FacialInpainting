@@ -18,6 +18,7 @@ class Loss():
         self.prediction = None
         self.orig_image_permuted = None
         self.mask_permuted = None
+        self.comp = None
 
     def prepare_loss_calculation(self, prediction, orig_image, mask):
         """
@@ -61,10 +62,10 @@ class Loss():
         self.vgg16_pred_out = self.vgg16_model(self.prediction)
         torch.cuda.empty_cache()
 
-        comp = self.mask_permuted * self.orig_image_permuted + (1 - self.mask_permuted) * self.prediction
+        self.comp = self.mask_permuted * self.orig_image_permuted + (1 - self.mask_permuted) * self.prediction
         torch.cuda.empty_cache()
 
-        self.vgg16_comp_out = self.vgg16_model(comp)
+        self.vgg16_comp_out = self.vgg16_model(self.comp)
         torch.cuda.empty_cache()
 
     def calculate_perceptual_loss(self):
@@ -98,9 +99,15 @@ class Loss():
             loss += torch.nn.L1Loss()(self.gram_matrix(pred), self.gram_matrix(gt))
         return loss
 
+    def calculate_tv_loss(self):
+        loss = torch.mean(torch.abs(self.comp[:, :, :, :-1] - self.comp[:, :, :, 1:])) + \
+            torch.mean(torch.abs(self.comp[:, :, :-1, :] - self.comp[:, :, 1:, :]))
+        return loss
+
     @staticmethod
     def gram_matrix(output):
         """
+        https://github.com/pytorch/examples/blob/master/fast_neural_style/neural_style/utils.py
         Calculates the Gram Matrix on the VGG Output
         :param: Output of the Network
         :returns: Gram Matrix
