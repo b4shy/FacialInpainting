@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import Slider from '@material-ui/core/Slider';
 
+import ImageCanvas from '../imageCanvas';
 import EditCanvas from '../editCanvas';
 
 const AntSwitch = withStyles(theme => ({
@@ -117,8 +118,9 @@ export default class index extends Component {
                         Reset
                     </Button>
                 </Grid>
-                <Grid item xs={12}>
-                    <EditCanvas crop={this.props.crop} src={this.props.src}/>
+                <Grid item xs={12} style={{position: 'relative'}}>
+                    <EditCanvas size={this.state.size} erase={this.state.erase}/>
+                    <ImageCanvas crop={this.props.crop} src={this.props.src} />
                 </Grid>
             </Grid>
         )

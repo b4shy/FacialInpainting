@@ -5,51 +5,75 @@ export default class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            image: "",
-            crop: {},
-            size: 25,
-            erase: false
+            isPainting: false,
+            mousePosition: undefined
         };
         this.canvasRef = React.createRef();
     }
 
-    componentDidUpdate() {
-        //console.log("image:", this.props.src);
-        if (this.props.src != "") {
-            var image = new Image();
-            image.src = this.props.src;
-            //console.log(this.props.crop);
-            /*console.log(this.props.crop.x * image.width / 100,
-                this.props.crop.y * image.height / 100,
-                this.props.crop.width * image.width / 100,
-                this.props.crop.height * image.height / 100,
-                0, 
-                0,
-                IMAGE_SIZE.width,
-                IMAGE_SIZE.height);*/
+    componentDidMount() {
+        const canvas = this.canvasRef.current;
+        canvas.addEventListener('mouseup', this.exitPaint.bind(this));
+        canvas.addEventListener('mouseleave', this.exitPaint.bind(this));
+        canvas.addEventListener('mousedown', this.startPaint.bind(this));
+        canvas.addEventListener('mousemove', this.paint.bind(this));
+    }
+
+    startPaint(event) {
+        const coordinates = this.getCoordinates(event);
+        if (coordinates) {
+            this.setState({ mousePosition: coordinates });
+            this.setState({ isPainting: true });
+        }
+    };
 
 
-            const canvas = this.canvasRef.current;
-            const context = canvas.getContext('2d');
-            context.drawImage(
-                image, 
-                this.props.crop.x * image.width / 100,
-                this.props.crop.y * image.height / 100,
-                this.props.crop.width * image.width / 100,
-                this.props.crop.height * image.height / 100,
-                0, 
-                0,
-                IMAGE_SIZE.width,
-                IMAGE_SIZE.height
-                );
+    paint(event) {
+        if (this.state.isPainting) {
+            const newMousePosition = this.getCoordinates(event);
+            if (this.state.mousePosition && newMousePosition) {
+                this.drawLine(this.state.mousePosition, newMousePosition);
+                this.setState({ mousePosition: newMousePosition });
+            }
         }
     }
 
-    render() {
-        //javascript code der bild in canvas lädt
+    exitPaint() {
+        this.setState({ mousePosition: undefined });
+        this.setState({ isPainting: false });
+    }
 
+    getCoordinates(event) {
+        const canvas = this.canvasRef.current;
+        return { x: event.pageX - canvas.offsetLeft, y: event.pageY - canvas.offsetTop };
+    };
+
+    drawLine(originalMousePosition, newMousePosition) {
+        const canvas = this.canvasRef.current;
+        const context = canvas.getContext('2d');
+        if (context) {
+            context.strokeStyle = 'red';
+            context.lineJoin = 'round';
+            context.lineWidth = this.props.size;
+
+            if (this.props.erase) {
+                context.globalCompositeOperation = 'destination-out';
+            } else {
+                context.globalCompositeOperation = 'source-over';
+            }
+
+            context.beginPath();
+            context.moveTo(originalMousePosition.x, originalMousePosition.y);
+            context.lineTo(newMousePosition.x, newMousePosition.y);
+            context.closePath();
+
+            context.stroke();
+        }
+    };
+
+    render() {
         return (
-            <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} ref={this.canvasRef}>
+            <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} ref={this.canvasRef} style={{ position: 'absolute', left: 0, top: 0, zIndex: 1 }}>
             </canvas>
         )
     }
