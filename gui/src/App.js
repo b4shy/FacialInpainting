@@ -17,7 +17,7 @@ function App() {
   return (
     <div className="App">
       <Typography variant="h1">
-        FacialInpainting
+        DeFINe
       </Typography>
       <Editor src={src} crop={crop} />
       <ImageLoaderModal parentCallback={imagecropCallbackFunction} />
