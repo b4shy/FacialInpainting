@@ -8,6 +8,8 @@ import Slider from '@material-ui/core/Slider';
 
 import ImageCanvas from '../imageCanvas';
 import EditCanvas from '../editCanvas';
+import { IMAGE_SIZE } from '../../constants'
+import { Container } from '@material-ui/core';
 
 const AntSwitch = withStyles(theme => ({
     root: {
@@ -67,6 +69,7 @@ export default class index extends Component {
             size: 25,
             erase: false
         };
+        this.child = React.createRef();
     }
 
     handlePenChange(e) {
@@ -76,53 +79,63 @@ export default class index extends Component {
         this.setState({ size: value });
     }
 
+    handleClearDrawing(e) {
+        this.child.current.clearCanvas();
+        this.setState({ erase: false });
+    }
+
     render() {
         //javascript code der bild in canvas lädt
         return (
-            <Grid container spacing={3}>
-                <Grid item xs={4}>
-                    <Grid item xs={12}>
-                        Stiftgröße
+            <Container>
+                <Grid container spacing={3}>
+                    <Grid item xs={4}>
+                        <Grid item xs={12}>
+                            Stiftgröße
                     </Grid>
-                    <Grid item xs={8}>
-                        <Slider
-                            defaultValue={this.state.size}
-                            getAriaValueText={valuetext}
-                            step={5}
-                            valueLabelDisplay="auto"
-                            marks={marks}
-                            min={5}
-                            max={100}
-                            onChangeCommitted={(event, value) => this.handleSizeChange(value)}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid item xs={4}>
-                    <Grid component="label" container alignItems="center" spacing={1}>
-                        <Grid item>Pen</Grid>
-                        <Grid item>
-                            <AntSwitch
-                                checked={this.state.erase}
-                                onChange={this.handlePenChange.bind(this)}
+                        <Grid item xs={8}>
+                            <Slider
+                                defaultValue={this.state.size}
+                                getAriaValueText={valuetext}
+                                step={5}
+                                valueLabelDisplay="auto"
+                                marks={marks}
+                                min={5}
+                                max={100}
+                                onChangeCommitted={(event, value) => this.handleSizeChange(value)}
                             />
                         </Grid>
-                        <Grid item>Eraser</Grid>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Grid component="label" container alignItems="center" spacing={1}>
+                            <Grid item>Pen</Grid>
+                            <Grid item>
+                                <AntSwitch
+                                    checked={this.state.erase}
+                                    onChange={this.handlePenChange.bind(this)}
+                                />
+                            </Grid>
+                            <Grid item>Eraser</Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            startIcon={<RestoreIcon />}
+                            onClick={this.handleClearDrawing.bind(this)}
+                        >
+                            Reset
+                    </Button>
+                    </Grid>
+                    <Grid item xs={12} style={{}}>
+                        <Container style={{ position: 'relative', width: IMAGE_SIZE.width, height: IMAGE_SIZE.height, cursor: 'crosshair', border: 'solid black 1px' }}>
+                            <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.child} />
+                            <ImageCanvas crop={this.props.crop} src={this.props.src} />
+                        </Container>
                     </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<RestoreIcon />}
-                    >
-                        Reset
-                    </Button>
-                </Grid>
-                <Grid item xs={12} style={{position: 'relative'}}>
-                    <EditCanvas size={this.state.size} erase={this.state.erase}/>
-                    <ImageCanvas crop={this.props.crop} src={this.props.src} />
-                </Grid>
-            </Grid>
+            </Container>
         )
     }
 }

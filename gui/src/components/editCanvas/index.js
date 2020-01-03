@@ -17,6 +17,11 @@ export default class index extends Component {
         canvas.addEventListener('mouseleave', this.exitPaint.bind(this));
         canvas.addEventListener('mousedown', this.startPaint.bind(this));
         canvas.addEventListener('mousemove', this.paint.bind(this));
+
+        //touchevents
+        canvas.addEventListener('touchend', this.exitPaint.bind(this));
+        canvas.addEventListener('touchstart', this.startPaint.bind(this));
+        canvas.addEventListener('touchmove', this.paint.bind(this));
     }
 
     startPaint(event) {
@@ -45,7 +50,16 @@ export default class index extends Component {
 
     getCoordinates(event) {
         const canvas = this.canvasRef.current;
-        return { x: event.pageX - canvas.offsetLeft, y: event.pageY - canvas.offsetTop };
+        var rect = canvas.getBoundingClientRect();
+        if (event instanceof TouchEvent) {
+            event.preventDefault();
+            return { x: event.touches[0].clientX - rect.left, y: event.touches[0].clientY - rect.top };
+        } else {
+            //console.log("page:", event.pageY);
+            //console.log("client:", event.clientY);
+            return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        }
+        //console.log(event.pageY,canvas.offsetTop ,rect.top);
     };
 
     drawLine(originalMousePosition, newMousePosition) {
@@ -70,6 +84,12 @@ export default class index extends Component {
             context.stroke();
         }
     };
+
+    clearCanvas() {
+        const canvas = this.canvasRef.current;
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
     render() {
         return (
