@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Editor from './components/editor';
 import ImageLoaderModal from './components/imageLoaderModal';
+import { Typography } from '@material-ui/core';
 
 function App() {
   const [src, setSrc] = React.useState(false);
@@ -14,10 +15,13 @@ function App() {
   };
 
   return (
-      <div className="App">
-        <Editor src={src} crop={crop}/>
-        <ImageLoaderModal parentCallback={imagecropCallbackFunction}/>
-      </div>
+    <div className="App">
+      <Typography variant="h1">
+        FacialInpainting
+      </Typography>
+      <Editor src={src} crop={crop} />
+      <ImageLoaderModal parentCallback={imagecropCallbackFunction} />
+    </div>
   );
 }
 

@@ -15,7 +15,7 @@ export default class index extends Component {
 
     componentDidUpdate() {
         //console.log("image:", this.props.src);
-        if (this.props.src != "") {
+        if (this.props.src !== "") {
             var image = new Image();
             image.src = this.props.src;
 

@@ -8,6 +8,7 @@ import Slider from '@material-ui/core/Slider';
 
 import ImageCanvas from '../imageCanvas';
 import EditCanvas from '../editCanvas';
+import PredictionButton from '../predictionButton';
 import { IMAGE_SIZE } from '../../constants'
 import { Container } from '@material-ui/core';
 
@@ -69,7 +70,8 @@ export default class index extends Component {
             size: 25,
             erase: false
         };
-        this.child = React.createRef();
+        this.editCanvas = React.createRef();
+        this.imageCanvas = React.createRef();
     }
 
     handlePenChange(e) {
@@ -80,7 +82,7 @@ export default class index extends Component {
     }
 
     handleClearDrawing(e) {
-        this.child.current.clearCanvas();
+        this.editCanvas.current.clearCanvas();
         this.setState({ erase: false });
     }
 
@@ -91,7 +93,7 @@ export default class index extends Component {
                 <Grid container spacing={3}>
                     <Grid item xs={4}>
                         <Grid item xs={12}>
-                            Stiftgröße
+                            Size
                     </Grid>
                         <Grid item xs={8}>
                             <Slider
@@ -130,11 +132,13 @@ export default class index extends Component {
                     </Grid>
                     <Grid item xs={12} style={{}}>
                         <Container style={{ position: 'relative', width: IMAGE_SIZE.width, height: IMAGE_SIZE.height, cursor: 'crosshair', border: 'solid black 1px' }}>
-                            <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.child} />
-                            <ImageCanvas crop={this.props.crop} src={this.props.src} />
+                            <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} />
+                            <ImageCanvas crop={this.props.crop} src={this.props.src} ref={this.imageCanvas}/>
                         </Container>
                     </Grid>
                 </Grid>
+
+                <PredictionButton editCanvas={this.editCanvas} imageCanvas={this.imageCanvas}/>
             </Container>
         )
     }
