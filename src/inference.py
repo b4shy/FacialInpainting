@@ -15,8 +15,8 @@ parser.add_argument('--ckt', help="Path to checkpoint", default="../ckt/0")
 args = parser.parse_args()
 ckt_path = args.ckt
 
-img0_path = f'../dat/1.png'
-mask0_path = f'../dat/mask_00129_test.png'
+img0_path = f'../dat/4.png'
+mask0_path = f'../dat/mask_00014_test.png'
 image = cv2.imread(img0_path)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 image = cv2.resize(image, (512, 512))
