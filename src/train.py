@@ -6,7 +6,7 @@ import os
 from torch.utils import data
 from torch.utils.tensorboard import SummaryWriter
 import torch
-from utils import create_grid, write_to_tensorboard
+from utils import create_grid, write_to_tensorboard, set_bn_eval
 from loss import Loss
 from model import DeFINe, Vgg16
 from loader import Dataset
@@ -26,6 +26,8 @@ parser.add_argument('--train_from_checkpoint', help='Path to checkpoint',
                     default=None)
 parser.add_argument('--logdir', help='Path to Tensorboard Logs',
                     default="~/runs/default")
+parser.add_argument('--finetune', help='True or False. When True freeze BatchNorm',
+                    default=False)
 
 
 args = parser.parse_args()
@@ -36,6 +38,7 @@ batch_size = args.batch_size
 learning_rate = args.learning_rate
 train_from_checkpoint = args.train_from_checkpoint
 logdir = args.logdir
+finetune = args.finetune
 
 use_cuda = torch.cuda.is_available()
 cuda_device_count = torch.cuda.device_count()
@@ -43,6 +46,9 @@ print(f'Cuda Devices: {cuda_device_count}')
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
 NET = DeFINe()
+if finetune:
+    NET.apply(set_bn_eval)
+
 vgg16_partial = Vgg16()
 
 

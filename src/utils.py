@@ -27,3 +27,14 @@ def write_to_tensorboard(writer, grid, actual_loss, GLOBAL_STEP):
     if grid is not None:
         writer.add_image("Predictions and Inputs", grid, global_step=GLOBAL_STEP)
     writer.add_scalar('Loss', actual_loss, global_step=GLOBAL_STEP)
+
+
+def set_bn_eval(unet):
+    """
+    This freezes the BatchNorm Layers and makes them untrainable
+    https://discuss.pytorch.org/t/cannot-freeze-batch-normalization-parameters/38696
+    """
+    classname = unet.__class__.__name__
+    if classname.find('BatchNorm2d') != -1:
+        unet.eval()
+
