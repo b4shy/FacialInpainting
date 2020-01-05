@@ -8,7 +8,7 @@ export default class index extends Component {
         this.state = {
         };
     }
-    predict() {
+    async predict() {
         const editCanvas = this.props.editCanvas.current.canvasRef.current;
         const editContext = editCanvas.getContext('2d');
         const editData = editContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
@@ -22,7 +22,7 @@ export default class index extends Component {
             var imageRow = new Array(IMAGE_SIZE.width);
             for (var x = 0; x < IMAGE_SIZE.width; x++) {
                 var pixel = [
-                    imageData[4 * (y * IMAGE_SIZE.width + x) ], // red
+                    imageData[4 * (y * IMAGE_SIZE.width + x)], // red
                     imageData[4 * (y * IMAGE_SIZE.width + x) + 1], // green
                     imageData[4 * (y * IMAGE_SIZE.width + x) + 2], // blue
                     editData[4 * (y * IMAGE_SIZE.width + x) + 3], // alpha
@@ -35,6 +35,17 @@ export default class index extends Component {
 
 
         console.log("predict:", newImage);
+
+        const fileName = "networkinput";
+        const json = JSON.stringify(newImage);
+        const blob = new Blob([json], { type: 'application/json' });
+        const href = await URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = href;
+        link.download = fileName + ".json";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
         //TODO
         /*var xhr = new XMLHttpRequest()
