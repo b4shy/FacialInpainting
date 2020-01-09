@@ -3,3 +3,7 @@ PyQt5
 torch
 torchvision
 pylint-fail-under
+opencv-python
+matplotlib
+pytest-cov
+tensorboard

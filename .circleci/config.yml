@@ -7,12 +7,17 @@ jobs:
       - checkout # check out the code in the project directory
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
-#      - run: pip3 install -r requirements.txt # run the `echo` command
-      - run: pip3 install PyQt5
-      - run: pip3 install flake8
-      - run: pip3 install pytest-cov
-      - run: pip3 install pylint-fail-under
+      - restore_cache:  # ensure this step occurs *before* installing dependencies
+          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run: pip3 install -r requirements.txt
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.6/site-packages"
       - run: pylint-fail-under --rcfile=.pylintrc --fail_under 7 src/
-      - run: pylint-fail-under --rcfile=.pylintrc --fail_under 7 gui/create_draft_for_presentation_screenshot.py
+      - run: pytest tst/ --cov-report term-missing --cov=loader --cov=loss --cov=utils --cov-fail-under 80
+
 
 
