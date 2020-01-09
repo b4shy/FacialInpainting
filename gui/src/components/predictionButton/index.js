@@ -12,12 +12,14 @@ export default class index extends Component {
         const editCanvas = this.props.editCanvas.current.canvasRef.current;
         const editContext = editCanvas.getContext('2d');
         const editData = editContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
+        const maskPNG    = editCanvas.toDataURL("image/png");
         //console.log("predict:", this.props.editCanvas.current.canvasRef.current.toDataURL());
         const imageCanvas = this.props.imageCanvas.current.canvasRef.current;
         const imageContext = imageCanvas.getContext('2d');
         const imageData = imageContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
+        const imgPNG    = imageCanvas.toDataURL("image/png");
 
-        var newImage = new Array(IMAGE_SIZE.height);
+        /*var newImage = new Array(IMAGE_SIZE.height);
         for (var y = 0; y < IMAGE_SIZE.height; y++) {
             var imageRow = new Array(IMAGE_SIZE.width);
             for (var x = 0; x < IMAGE_SIZE.width; x++) {
@@ -31,18 +33,29 @@ export default class index extends Component {
                 imageRow[x] = pixel;
             }
             newImage[y] = imageRow;
-        }
+        }*/
 
 
-        console.log("predict:", newImage);
+        //console.log("predict:", newImage);
 
-        const fileName = "networkinput";
-        const json = JSON.stringify(newImage);
-        const blob = new Blob([json], { type: 'application/json' });
-        const href = await URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = href;
-        link.download = fileName + ".json";
+        var fileName = "networkInputImage";
+        //const json = JSON.stringify(newImage);
+        //const blob = new Blob([json], { type: 'application/json' });
+        //const href = await URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.href = imgPNG;
+        link.download = fileName + ".png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        fileName = "networkInputMask";
+        //const json = JSON.stringify(newImage);
+        //const blob = new Blob([json], { type: 'application/json' });
+        //const href = await URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.href = maskPNG;
+        link.download = fileName + ".png";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
