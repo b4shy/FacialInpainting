@@ -10,21 +10,25 @@ import matplotlib.pyplot as plt
 import torch
 from model import DeFINe
 parser = argparse.ArgumentParser(description="Path to model")
-parser.add_argument('--ckt', help="Path to checkpoint", default="../ckt/0")
+parser.add_argument('--ckt', help="Path to checkpoint", default="../ckt/v4/33")
 
 args = parser.parse_args()
 ckt_path = args.ckt
 
-img0_path = f'../dat/2.png'
-mask0_path = f'../dat/mask_00129_test.png'
+img0_path = f'../dat/networkInputImage.png'
+mask0_path = f'../dat/networkInputMask.png'
+
 image = cv2.imread(img0_path)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-image = cv2.resize(image, (512, 512))
 image = image / 255  # Normalize
 
+
 mask = cv2.imread(mask0_path)
+mask[:, :, 0] = mask[:, :, 2]
+mask[:, :, 1] = mask[:, :, 2]
 mask = mask/255
-mask = cv2.rotate(mask, cv2.ROTATE_90_CLOCKWISE)
+mask = 1 - mask
+#mask = cv2.rotate(mask, cv2.ROTATE_90_CLOCKWISE)
 
 masked_image = image.copy()
 masked_image[mask == 0] = 1
@@ -37,7 +41,7 @@ net.eval()
 
 state_dict = torch.load(ckt_path, map_location=torch.device('cpu'))
 net.load_state_dict(state_dict)
-# new_state_dict = OrderedDict()
+new_state_dict = OrderedDict()
 # for k, v in state_dict.items():
 #    name = k[7:] # remove module.
 #    new_state_dict[name] = v
