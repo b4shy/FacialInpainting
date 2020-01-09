@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { IMAGE_SIZE } from '../../constants'
+
 
 export default class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: false,
         };
     }
     async predict() {
         const editCanvas = this.props.editCanvas.current.canvasRef.current;
         const editContext = editCanvas.getContext('2d');
         const editData = editContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
-        const maskPNG    = editCanvas.toDataURL("image/png");
+        const maskPNG = editCanvas.toDataURL("image/png");
         //console.log("predict:", this.props.editCanvas.current.canvasRef.current.toDataURL());
         const imageCanvas = this.props.imageCanvas.current.canvasRef.current;
         const imageContext = imageCanvas.getContext('2d');
         const imageData = imageContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
-        const imgPNG    = imageCanvas.toDataURL("image/png");
+        const imgPNG = imageCanvas.toDataURL("image/png");
 
         /*var newImage = new Array(IMAGE_SIZE.height);
         for (var y = 0; y < IMAGE_SIZE.height; y++) {
@@ -71,9 +74,15 @@ export default class index extends Component {
 
     render() {
         return (
-            <Button variant="outlined" color="primary" onClick={this.predict.bind(this)}>
-                Predict
-            </Button>
+            <div style={{position: 'relative'}}>
+                <Button variant="outlined" color="primary" onClick={this.predict.bind(this)}>
+                    Predict
+                {this.state.isLoading && <CircularProgress size={24} style={{position: 'absolute', top: '50%',
+      left: '50%',
+      marginTop: -12,
+      marginLeft: -12}}/>}
+                </Button>
+            </div>
         )
     }
 }
