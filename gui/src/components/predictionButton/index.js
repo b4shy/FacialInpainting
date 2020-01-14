@@ -75,7 +75,7 @@ export default class index extends Component {
     render() {
         return (
             <div style={{position: 'relative'}}>
-                <Button variant="outlined" color="primary" onClick={this.predict.bind(this)}>
+                <Button variant="outlined" color="primary" onClick={this.predict.bind(this)} disabled={this.state.isLoading}>
                     Predict
                 {this.state.isLoading && <CircularProgress size={24} style={{position: 'absolute', top: '50%',
       left: '50%',

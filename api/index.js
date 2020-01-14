@@ -4,15 +4,22 @@ const path = require('path');
 const app = express();
 
 // Serve the static files from the React app
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 // An api endpoint that returns python script output
-app.get('/api/getPython/:name', (req,res) => {
+app.post('/api/predict', (req,res) => {
+    var image = req.body.image;
+    console.log(typeof image);
+    console.log(image);
+
+    //res.send(req.body);
+    //res.sendStatus(200);
     let runPy = new Promise(function(success, nosuccess) {
 
         const { spawn } = require('child_process');
-        const arg = req.params.name;
-        const pyprog = spawn('python', [__dirname+'/network/test.py', arg]);
+        const pyprog = spawn('python', [__dirname+'/network/test.py']);
+        pyprog.stdin.write(JSON.stringify(["foo", "bar", "baz"]))
     
         pyprog.stdout.on('data', function(data) {
     
