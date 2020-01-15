@@ -16,6 +16,7 @@ export default class index extends Component {
             dialogOpen: false
         };
         this.handleClose = this.handleClose.bind(this);
+        this.canvasRef = React.createRef();
     }
     async predict() {
         const editCanvas = this.props.editCanvas.current.canvasRef.current;
@@ -80,20 +81,31 @@ export default class index extends Component {
             body: JSON.stringify({
                 image: newImage,
             })
-        }).then(response => {
+        }).then(response => response.json())
+        .then(response => {
             this.setState({ isLoading: false });
-            //console.log(response)
+            console.log(response.image.length)
+            console.log(response)
+            console.log(response.image[0].length)
             this.setState({ dialogOpen: true });
 
-            var data = JSON.parse(response);
-            var image = new Image();
-            image.onload = function () {
-                const canvas = this.canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(image, 0, 0); // draw the new image to the screen
+            
+            const canvas = this.canvasRef.current;
+            const ctx = canvas.getContext('2d');
+
+            var imgData = ctx.createImageData(canvas.width, canvas.height);
+            var k = 0;
+            for (var i = 0; i < canvas.height; i++) {
+                for (var j = 0; j < canvas.width; j++) {
+                  imgData.data[k++] = response.image[i][j][0];
+                  imgData.data[k++] = response.image[i][j][1];
+                  imgData.data[k++] = response.image[i][j][2];
+                  imgData.data[k++] = 255;
+                }
             }
-            image.src = data.image;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.putImageData(imgData, 0, 0);
         });
     }
 
