@@ -16,11 +16,17 @@ def hello():
 def get_tasks():
     #print(request.json)
     data = np.array(request.json['image'])
+    #print(data.shape)
     image = data[:,:,:3]
     mask = data[:,:,3]
 
+    print(image.shape)
+    print(mask.shape)
 
-    return jsonify({'image': image.tolist(), "maks": mask.tolist()})
+    prediction = inference(image, mask)
+
+
+    return jsonify({'prediction': prediction.tolist()})
     #return jsonify({'result': inference(image, mask)})
 
 
