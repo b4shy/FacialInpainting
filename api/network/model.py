@@ -4,7 +4,7 @@ This module implements models for Facial Inpainting
 from collections import namedtuple
 import torch
 import torch.nn as nn
-from partialconv2d import PartialConv2d
+from network.partialconv2d import PartialConv2d
 from torch.nn.init import kaiming_normal_
 import torchvision
 
