@@ -57,5 +57,7 @@ def inference(image, mask):
     pred = pred.clip(min=0)
     pred = np.floor(pred * 255)
 
+    pred = np.squeeze(pred, axis=0)
+
 
     return pred

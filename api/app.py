@@ -25,8 +25,11 @@ def get_tasks():
 
     prediction = inference(image, mask)
 
+    #print("yow")
+    #print(prediction.shape)
 
-    return jsonify({'prediction': prediction.tolist()})
+
+    return jsonify({'image': prediction.tolist()})
     #return jsonify({'result': inference(image, mask)})
 
 
