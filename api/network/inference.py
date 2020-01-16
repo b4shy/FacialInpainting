@@ -22,6 +22,7 @@ def inference(image, mask):
     #args = parser.parse_args()
     ckt_path = os.path.abspath(".") + "/network/1" #args.ckt #TODO evtl von Request abhängig
     image = image / 255  # Normalize
+    mask[mask > 0] = 255
 
     print(os.path.isfile(os.path.abspath(".") + "/network/1"))
     print(ckt_path)
