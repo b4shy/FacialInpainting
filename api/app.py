@@ -8,8 +8,9 @@ from flask import Flask, render_template, jsonify, request
 import torch
 import numpy as np
 
-from network.inference import inference
+from network.inference import inference, InferenceManager
 from network.model import DeFINe
+
 
 
 def main(config_file="config.yml"):
@@ -30,12 +31,15 @@ def main(config_file="config.yml"):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:0" if use_cuda else "cpu")
     net = DeFINe()
+    inference_manager = InferenceManager(app, device)
+
     net.to(device)
     net.eval()
 
     state_dict = torch.load(checkpoint_path, map_location=torch.device('cpu'))
     net.load_state_dict(state_dict)
 
+    # register_inference_api(app, )
 
     @app.route("/")
     def hello():
