@@ -1,54 +1,67 @@
 #!/usr/bin/env python
-from flask import Flask, render_template, jsonify, request
+import time
 import os
+import logging
+import yaml
+
+from flask import Flask, render_template, jsonify, request
 import torch
 import numpy as np
-import time
 
 from network.inference import inference
 from network.model import DeFINe
 
 
-app = Flask(__name__, static_folder="build/static", template_folder="build")
+def main(config_file="config.yml"):
+    with open(config_file) as cf:
+        config = yaml.safe_load(cf.read())
+    
+    webserver_config = config["webserver"]
+    neural_network_config = config["neural_network"]
 
-ckt_path = os.path.abspath(".") + "/network/1"  # args.ckt #TODO evtl von Request abhängig
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda:0" if use_cuda else "cpu")
-net = DeFINe()
-net.to(device)
-net.eval()
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(levelname)s - %(name)s %(module)s - %(funcName)s: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    logger = logging.getLogger(__name__)
 
-state_dict = torch.load(ckt_path, map_location=torch.device('cpu'))
-net.load_state_dict(state_dict)
+    app = Flask(__name__, static_folder=webserver_config["static_folder"], template_folder=webserver_config["template_folder"])
 
+    checkpoint_path = os.path.abspath(".") + neural_network_config["checkpoint"]  # args.ckt #TODO evtl von Request abhängig
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda:0" if use_cuda else "cpu")
+    net = DeFINe()
+    net.to(device)
+    net.eval()
 
-@app.route("/")
-def hello():
-    return render_template('index.html')
-
-@app.route('/inference', methods=['POST'])
-def get_tasks():
-    #print(request.json)
-    data = np.array(request.json['image'])
-    #print(data.shape)
-    image = data[:,:,:3]
-    mask = data[:,:,3]
-
-    print(image.shape)
-    print(mask.shape)
-
-    tic = time.time()
-    prediction = inference(net, image, mask, device)
-    print(time.time() - tic)
-    #print("yow")
-    #print(prediction.shape)
+    state_dict = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+    net.load_state_dict(state_dict)
 
 
-    return jsonify({'image': prediction.tolist()})
-    #return jsonify({'result': inference(image, mask)})
+    @app.route("/")
+    def hello():
+        return render_template('index.html')
+
+    @app.route('/inference', methods=['POST'])
+    def get_tasks():
+        data = np.array(request.json['image'])
+        image = data[:,:,:3]
+        mask = data[:,:,3]
+        logger.info(image.shape)
+        logger.info(mask.shape)
+
+        tic = time.time()
+        prediction = inference(net, image, mask, device)
+        logger.info(time.time() - tic)
 
 
-print('Starting Flask!')
+        return jsonify({'image': prediction.tolist()})
+        #return jsonify({'result': inference(image, mask)})
 
-app.debug=True
-app.run(host='0.0.0.0', debug=False)
+
+    logger.info("Starting Flask!")
+
+    app.run(host='0.0.0.0', debug=False)
+
+
+if __name__ == '__main__':
+    main()

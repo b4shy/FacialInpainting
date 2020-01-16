@@ -9,3 +9,6 @@ build/
 
 # Sphinx documentation
 docs/_build/
+
+# weights
+dat/neural_network_weights
