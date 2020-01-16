@@ -1,11 +1,25 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, jsonify, request
-from network.inference import inference
+import os
+import torch
 import numpy as np
+import time
+
+from network.inference import inference
+from network.model import DeFINe
+
 
 app = Flask(__name__, static_folder="build/static", template_folder="build")
 
+ckt_path = os.path.abspath(".") + "/network/1"  # args.ckt #TODO evtl von Request abhängig
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda:0" if use_cuda else "cpu")
+net = DeFINe()
+net.to(device)
+net.eval()
 
+state_dict = torch.load(ckt_path, map_location=torch.device('cpu'))
+net.load_state_dict(state_dict)
 
 
 @app.route("/")
@@ -23,8 +37,9 @@ def get_tasks():
     print(image.shape)
     print(mask.shape)
 
-    prediction = inference(image, mask)
-
+    tic = time.time()
+    prediction = inference(net, image, mask, device)
+    print(time.time() - tic)
     #print("yow")
     #print(prediction.shape)
 
@@ -36,4 +51,4 @@ def get_tasks():
 print('Starting Flask!')
 
 app.debug=True
-app.run(host='0.0.0.0')
+app.run(host='0.0.0.0', debug=False)
