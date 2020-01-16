@@ -7,10 +7,20 @@ verify_ssl = true
 yapf = "*"
 pylint = "*"
 mypy = "*"
+flake8 = "*"
+pylint-fail-under = "*"
+pytest-cov = "*"
 
 [packages]
 sphinx = "*"
 rinohtype = "*"
+flask = "*"
+numpy = "*"
+torch = "*"
+torchvision = "*"
+opencv-python = "*"
+matplotlib = "*"
+tensorboard = "*"
 
 [requires]
 python_version = "3.7"
