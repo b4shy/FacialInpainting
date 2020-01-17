@@ -51,7 +51,7 @@ export default class index extends Component {
     getCoordinates(event) {
         const canvas = this.canvasRef.current;
         var rect = canvas.getBoundingClientRect();
-        if (event instanceof TouchEvent) {
+        if (window.TouchEvent && event instanceof TouchEvent) {
             event.preventDefault();
             return { x: event.touches[0].clientX - rect.left, y: event.touches[0].clientY - rect.top };
         } else {
@@ -93,7 +93,7 @@ export default class index extends Component {
 
     render() {
         return (
-            <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} ref={this.canvasRef} style={{ position: 'absolute', left: 0, top: 0, zIndex: 1 }}>
+            <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} ref={this.canvasRef} style={{ position: 'absolute', left: 0, top: 0, zIndex: 1, border: '1px black solid' }}>
             </canvas>
         )
     }

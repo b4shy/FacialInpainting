@@ -131,7 +131,7 @@ export default class index extends Component {
                     </Button>
                     </Grid>
                     <Grid item xs={12} style={{}}>
-                        <Container style={{ position: 'relative', width: IMAGE_SIZE.width, height: IMAGE_SIZE.height, cursor: 'crosshair', border: 'solid black 1px' }}>
+                        <Container style={{ position: 'relative', width: IMAGE_SIZE.width, height: IMAGE_SIZE.height, cursor: 'crosshair' }}>
                             <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} />
                             <ImageCanvas crop={this.props.crop} src={this.props.src} ref={this.imageCanvas}/>
                         </Container>
