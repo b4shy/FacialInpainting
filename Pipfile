@@ -21,6 +21,7 @@ torchvision = "*"
 opencv-python = "*"
 matplotlib = "*"
 tensorboard = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.7"
