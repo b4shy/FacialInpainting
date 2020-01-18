@@ -26,7 +26,7 @@ def main(config_file="config.yml"):
 
     app = Flask(__name__, static_folder=webserver_config["static_folder"], template_folder=webserver_config["template_folder"])
     
-    checkpoint_path = os.path.join(os.path.abspath(".") + neural_network_config["checkpoint"])  # args.ckt #TODO evtl von Request abhängig
+    checkpoint_path = os.path.join(os.path.abspath("..") + neural_network_config["checkpoint"])  # args.ckt #TODO evtl von Request abhängig
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:0" if use_cuda else "cpu")
     net = DeFINe()
