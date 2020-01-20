@@ -1,7 +1,0 @@
-webserver:
-  host_address: "0.0.0.0"
-  static_folder: "../build/static"
-  template_folder: "build"
-
-neural_network:
-  checkpoint: "/dat/neural_network_weights"
