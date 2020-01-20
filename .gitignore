@@ -9,3 +9,6 @@ docs/_build/
 
 # weights
 *weights/
+
+# UI
+*node_modules/
