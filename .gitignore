@@ -12,3 +12,4 @@ docs/_build/
 
 # UI
 *node_modules/
+*build/
