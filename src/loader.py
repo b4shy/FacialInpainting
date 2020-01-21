@@ -6,13 +6,15 @@ import os
 from torch.utils import data
 import cv2
 import random
-
+import matplotlib.pyplot as plt
+import numpy as np
 
 class Dataset(data.Dataset):
     """
     Manages Data Loading
     """
-    def __init__(self, faces_path='../dat/Faces/ffhq-dataset/images512x512/', mask_path='../dat/qd_imd/train/'):
+    def __init__(self, faces_path='../dat/Faces/ffhq-dataset/images512x512/', mask_path='../dat/qd_imd/train/',
+                 transforms=None):
         """
         Initialize Dataset.
         The file structure in the ffhq is imagex1024x1024/(dir_with_number)/herearetheimages
@@ -26,6 +28,7 @@ class Dataset(data.Dataset):
         self.full_mask_path = []
         self.load_faces_paths()
         self.load_mask()
+        self.transform = transforms
 
     def __len__(self):
         """
@@ -47,12 +50,18 @@ class Dataset(data.Dataset):
         image_id = self.full_faces_path[index]
         image = cv2.imread(image_id)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = image / 255  # Normalize
 
         rnd_mask_index = random.randrange(0, len(self.full_mask_path))
         mask_id = self.full_mask_path[rnd_mask_index]
         mask = cv2.imread(mask_id)
-        mask = mask / 255  # Normalize
+
+        if self.transform:
+            image = self.transform(np.uint8(image))
+            mask = self.transform(np.uint8(mask))
+
+        image = image.numpy().transpose(1, 2, 0)
+        mask = mask.numpy().transpose(1, 2, 0)
+
         masked_image = self.overlay_mask(image, mask)
 
         sample = {"image": image, "masked_image": masked_image, "mask": mask}

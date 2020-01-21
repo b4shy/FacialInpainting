@@ -5,7 +5,7 @@ import torch
 
 
 class Loss():
-    def __init__(self, vgg16_model):
+    def __init__(self, vgg16_model, regularize_weight):
         """
         Inits the Loss with the VGG Partial Model
         :param vgg16_model: The VGG Model, which outputs the three MaxPool matrices
@@ -19,8 +19,10 @@ class Loss():
         self.orig_image_permuted = None
         self.mask_permuted = None
         self.comp = None
+        self.regularize_weight = regularize_weight
 
-    def prepare_loss_calculation(self, prediction, orig_image, mask):
+
+    def prepare_loss_calculation(self, prediction, orig_image, mask,):
         """
         Sets the instance variables for the corresponding step and performs the forward pass of the VGG Network
         :param prediction: Output of the PConv Unet
@@ -100,9 +102,9 @@ class Loss():
         return loss
 
     def calculate_tv_loss(self):
-        loss = torch.sum(torch.abs(self.comp[:, :, :, :-1] - self.comp[:, :, :, 1:])) + \
-            torch.sum(torch.abs(self.comp[:, :, :-1, :] - self.comp[:, :, 1:, :]))
-        return loss
+        loss = torch.abs(self.comp[:, :, :, :-1] - self.comp[:, :, :, 1:]).mean() + \
+            torch.abs(self.comp[:, :, :-1, :] - self.comp[:, :, 1:, :]).mean()
+        return self.regularize_weight * loss
 
     @staticmethod
     def gram_matrix(output):

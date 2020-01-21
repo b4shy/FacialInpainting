@@ -5,6 +5,7 @@ import argparse
 import os
 from torch.utils import data
 from torch.utils.tensorboard import SummaryWriter
+from torchvision import transforms
 import torch
 from utils import create_grid, write_to_tensorboard, set_bn_eval
 from loss import Loss
@@ -71,7 +72,12 @@ params = {'batch_size': batch_size,
 
 max_epochs = 200
 
-training_set = Dataset(faces_path=faces_path, mask_path=mask_path)
+training_set = Dataset(faces_path=faces_path, mask_path=mask_path, transforms=transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor()
+]))
+
 training_generator = data.DataLoader(training_set, **params)
 
 # validation_set = Dataset(mask_path='../dat/qd_imd/test/')
@@ -80,7 +86,7 @@ training_generator = data.DataLoader(training_set, **params)
 
 opt = torch.optim.Adam(NET.parameters(), lr=learning_rate)
 NET.train()
-loss = Loss(vgg16_partial)
+loss = Loss(vgg16_partial, 20)
 
 writer = SummaryWriter(logdir)
 GLOBAL_STEP = 0
@@ -106,6 +112,7 @@ for epoch in range(max_epochs):
 
         if GLOBAL_STEP % 3000 == 0:
             print(actual_loss)
+
             grid = create_grid(masked_img, pred)
             write_to_tensorboard(writer, grid, actual_loss, GLOBAL_STEP)
 
