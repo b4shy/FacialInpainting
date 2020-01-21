@@ -100,8 +100,8 @@ class Loss():
         return loss
 
     def calculate_tv_loss(self):
-        loss = torch.mean(torch.abs(self.comp[:, :, :, :-1] - self.comp[:, :, :, 1:])) + \
-            torch.mean(torch.abs(self.comp[:, :, :-1, :] - self.comp[:, :, 1:, :]))
+        loss = torch.sum(torch.abs(self.comp[:, :, :, :-1] - self.comp[:, :, :, 1:])) + \
+            torch.sum(torch.abs(self.comp[:, :, :-1, :] - self.comp[:, :, 1:, :]))
         return loss
 
     @staticmethod
