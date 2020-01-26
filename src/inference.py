@@ -16,7 +16,7 @@ args = parser.parse_args()
 ckt_path = args.ckt
 
 img0_path = f'../dat/networkInputImage.png'
-mask0_path = f'../dat/networkInputMask.png'
+mask0_path = f'../dat/mask_00129_test.png'
 
 image = cv2.imread(img0_path)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -24,11 +24,8 @@ image = image / 255  # Normalize
 
 
 mask = cv2.imread(mask0_path)
-mask[:, :, 0] = mask[:, :, 2]
-mask[:, :, 1] = mask[:, :, 2]
 mask = mask/255
-mask = 1 - mask
-#mask = cv2.rotate(mask, cv2.ROTATE_90_CLOCKWISE)
+mask = cv2.rotate(mask, cv2.ROTATE_90_CLOCKWISE)
 
 masked_image = image.copy()
 masked_image[mask == 0] = 1
