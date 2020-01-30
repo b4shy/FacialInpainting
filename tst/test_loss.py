@@ -11,7 +11,7 @@ MASK = torch.torch.ones((1, 512, 512, 3))
 vgg16_partial = model.Vgg16()
 vgg16_partial.to(DEVICE)
 
-loss_calulator1 = loss.Loss(vgg16_partial)
+loss_calulator1 = loss.Loss(vgg16_partial, 20)
 loss_calulator1.prepare_loss_calculation(PREDICTION, ORIG_IMAGE, MASK)
 
 
@@ -45,7 +45,7 @@ ORIG_IMAGE = torch.zeros((1, 512, 512, 3))
 MASK = torch.torch.ones((1, 512, 512, 3))
 MASK[0][0][0][0] = 0
 
-loss_calulator2 = loss.Loss(vgg16_partial)
+loss_calulator2 = loss.Loss(vgg16_partial, 20)
 loss_calulator2.prepare_loss_calculation(PREDICTION_WRONG, ORIG_IMAGE, MASK)
 
 
