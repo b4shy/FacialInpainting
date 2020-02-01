@@ -18,12 +18,16 @@ export default class index extends Component {
         super(props);
         this.state = {
             isLoading: false,
-            dialogOpen: false,
-            model: "4"
+            dialogOpen: true,
+            model: "4",
+            prediction: [],
+            difference: [],
+            resultType: "result"
         };
         this.handleClose = this.handleClose.bind(this);
         this.canvasRef = React.createRef();
         this.handleModelChange = this.handleModelChange.bind(this);
+        this.handleResultTypeChange = this.handleResultTypeChange.bind(this);
     }
     async predict() {
         const editCanvas = this.props.editCanvas.current.canvasRef.current;
@@ -91,29 +95,53 @@ export default class index extends Component {
             })
         }).then(response => response.json())
             .then(response => {
-                this.setState({ isLoading: false });
-                console.log(response.image.length)
-                console.log(response)
-                console.log(response.image[0].length)
-                this.setState({ dialogOpen: true });
-
-
                 const canvas = this.canvasRef.current;
                 const ctx = canvas.getContext('2d');
 
                 var imgData = ctx.createImageData(canvas.width, canvas.height);
-                var k = 0;
+                var k, l = 0;
+                var data = [];
+                var difference = [];
                 for (var i = 0; i < canvas.height; i++) {
                     for (var j = 0; j < canvas.width; j++) {
-                        imgData.data[k++] = response.image[i][j][0];
-                        imgData.data[k++] = response.image[i][j][1];
-                        imgData.data[k++] = response.image[i][j][2];
-                        imgData.data[k++] = 255;
+                        data[k++] = response.image[i][j][0];
+                        data[k++] = response.image[i][j][1];
+                        data[k++] = response.image[i][j][2];
+                        data[k++] = 255;
+
+                        //difference image
+                        var pred_gray = 0.3 * response.image[i][j][0] + 0.6 * response.image[i][j][1] + 0.11 * response.image[i][j][2];
+                        var img_gray = 0.3 * newImage[i][j][0] + 0.6 * newImage[i][j][1] + 0.11 * newImage[i][j][2];
+                        difference[l++] = (img_gray - pred_gray) ** 2;
+
                     }
                 }
 
+                this.setState({ prediction: data })
+
+                //difference normalization:
+                var differenceImage = []
+                var k = 0;
+                var max = Math.max(difference);
+                for (var i = 0; i < difference.length; i++) {
+                    difference[i] = Math.floor((difference[i] / max) * 255);
+
+                    differenceImage[k++] = difference[i];
+                    differenceImage[k++] = difference[i];
+                    differenceImage[k++] = difference[i];
+                    differenceImage[k++] = 255;
+                }
+
+                this.setState({ difference: differenceImage });
+
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                imgData.data = data;
                 ctx.putImageData(imgData, 0, 0);
+
+
+                this.setState({ isLoading: false });
+                this.setState({ dialogOpen: true });
             });
     }
 
@@ -124,6 +152,26 @@ export default class index extends Component {
 
     handleModelChange(event) {
         this.setState({ model: event.target.value });
+    };
+
+    handleResultTypeChange(event) {
+        this.setState({ resultType: event.target.value });
+
+        const canvas = this.canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        var imgData = ctx.createImageData(canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if(event.target.value == "diff"){
+            for (let i = 0; i < imgData.data.length; i++) {
+                imgData.data[i] = this.state.difference[i];
+            }   
+        }else{
+            for (let i = 0; i < imgData.data.length; i++) {
+                imgData.data[i] = this.state.prediction[i];
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
     };
 
     render() {
@@ -172,6 +220,20 @@ export default class index extends Component {
                         Load Image
                     </DialogTitle>
                     <DialogContent dividers>
+                        <FormControl component="fieldset">
+                            <RadioGroup value={this.state.resultType} onChange={this.handleResultTypeChange} row>
+                                <FormControlLabel
+                                    value="result"
+                                    control={<Radio color="primary" />}
+                                    label="result"
+                                />
+                                <FormControlLabel
+                                    value="diff"
+                                    control={<Radio color="primary" />}
+                                    label="diff"
+                                />
+                            </RadioGroup>
+                        </FormControl>
                         <canvas ref={this.canvasRef} height={IMAGE_SIZE.height} width={IMAGE_SIZE.width}></canvas>
                     </DialogContent>
                     <DialogActions>
