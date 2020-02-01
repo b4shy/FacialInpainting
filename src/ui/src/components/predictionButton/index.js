@@ -95,13 +95,18 @@ export default class index extends Component {
             })
         }).then(response => response.json())
             .then(response => {
+                console.log("response:", response);
+
+                this.setState({ dialogOpen: true });
+
                 const canvas = this.canvasRef.current;
                 const ctx = canvas.getContext('2d');
 
                 var imgData = ctx.createImageData(canvas.width, canvas.height);
-                var k, l = 0;
-                var data = [];
+                var k = 0;
+                var l = 0;
                 var difference = [];
+                var data = [];
                 for (var i = 0; i < canvas.height; i++) {
                     for (var j = 0; j < canvas.width; j++) {
                         data[k++] = response.image[i][j][0];
@@ -110,19 +115,43 @@ export default class index extends Component {
                         data[k++] = 255;
 
                         //difference image
-                        var pred_gray = 0.3 * response.image[i][j][0] + 0.6 * response.image[i][j][1] + 0.11 * response.image[i][j][2];
-                        var img_gray = 0.3 * newImage[i][j][0] + 0.6 * newImage[i][j][1] + 0.11 * newImage[i][j][2];
-                        difference[l++] = (img_gray - pred_gray) ** 2;
+                        //var pred_gray = 0.3 * response.image[i][j][0] + 0.6 * response.image[i][j][1] + 0.11 * response.image[i][j][2];
+                        //var img_gray = 0.3 * newImage[i][j][0] + 0.6 * newImage[i][j][1] + 0.11 * newImage[i][j][2];
+
+                        var diff_red = Math.abs(response.image[i][j][0]-newImage[i][j][0]);
+                        var diff_green = Math.abs(response.image[i][j][1]-newImage[i][j][1]);
+                        var diff_blue = Math.abs(response.image[i][j][2]-newImage[i][j][2]);
+                        difference[l++] = diff_red + diff_green + diff_blue;//Math.log2(diff_red + diff_green + diff_blue + 0.1);
 
                     }
                 }
 
-                this.setState({ prediction: data })
+                console.log("data: ", data);
+
+                for (var i = 0; i<data.length; i++){
+                    imgData.data[i] = data[i];
+                }
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.putImageData(imgData, 0, 0);
+
+
+
+                console.log("predData: ", imgData.data);
+
+                this.setState({ prediction: data });
 
                 //difference normalization:
+                var max = 0.001;//Math.max.apply(Math,difference);
+                difference.forEach(function(e) {
+                    if (max < e) {
+                        max = e;
+                    }
+                });
+
                 var differenceImage = []
                 var k = 0;
-                var max = Math.max(difference);
+
                 for (var i = 0; i < difference.length; i++) {
                     difference[i] = Math.floor((difference[i] / max) * 255);
 
@@ -135,13 +164,7 @@ export default class index extends Component {
                 this.setState({ difference: differenceImage });
 
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                imgData.data = data;
-                ctx.putImageData(imgData, 0, 0);
-
-
                 this.setState({ isLoading: false });
-                this.setState({ dialogOpen: true });
             });
     }
 
@@ -162,10 +185,12 @@ export default class index extends Component {
         var imgData = ctx.createImageData(canvas.width, canvas.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if(event.target.value == "diff"){
+            console.log("diff:", this.state.difference);
             for (let i = 0; i < imgData.data.length; i++) {
                 imgData.data[i] = this.state.difference[i];
             }   
         }else{
+            console.log("prediction:", this.state.prediction);
             for (let i = 0; i < imgData.data.length; i++) {
                 imgData.data[i] = this.state.prediction[i];
             }
