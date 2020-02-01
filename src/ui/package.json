@@ -22,7 +22,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postbuild": "mv build ../../build/"
+    "postbuild": "mv build ../../build/",
+    "clean": "rm -rf  ../../build && rm -rf node_modules",
+    "reinstall": "npm run clean && npm install",
+    "rebuild": "npm run clean && npm install && npm run build"
   },
   "eslintConfig": {
     "extends": "react-app"
