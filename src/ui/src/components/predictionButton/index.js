@@ -6,6 +6,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 
 export default class index extends Component {
@@ -13,10 +18,12 @@ export default class index extends Component {
         super(props);
         this.state = {
             isLoading: false,
-            dialogOpen: false
+            dialogOpen: false,
+            model: "4"
         };
         this.handleClose = this.handleClose.bind(this);
         this.canvasRef = React.createRef();
+        this.handleModelChange = this.handleModelChange.bind(this);
     }
     async predict() {
         const editCanvas = this.props.editCanvas.current.canvasRef.current;
@@ -79,34 +86,35 @@ export default class index extends Component {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                model: parseInt(this.state.model),
                 image: newImage,
             })
         }).then(response => response.json())
-        .then(response => {
-            this.setState({ isLoading: false });
-            console.log(response.image.length)
-            console.log(response)
-            console.log(response.image[0].length)
-            this.setState({ dialogOpen: true });
+            .then(response => {
+                this.setState({ isLoading: false });
+                console.log(response.image.length)
+                console.log(response)
+                console.log(response.image[0].length)
+                this.setState({ dialogOpen: true });
 
-            
-            const canvas = this.canvasRef.current;
-            const ctx = canvas.getContext('2d');
 
-            var imgData = ctx.createImageData(canvas.width, canvas.height);
-            var k = 0;
-            for (var i = 0; i < canvas.height; i++) {
-                for (var j = 0; j < canvas.width; j++) {
-                  imgData.data[k++] = response.image[i][j][0];
-                  imgData.data[k++] = response.image[i][j][1];
-                  imgData.data[k++] = response.image[i][j][2];
-                  imgData.data[k++] = 255;
+                const canvas = this.canvasRef.current;
+                const ctx = canvas.getContext('2d');
+
+                var imgData = ctx.createImageData(canvas.width, canvas.height);
+                var k = 0;
+                for (var i = 0; i < canvas.height; i++) {
+                    for (var j = 0; j < canvas.width; j++) {
+                        imgData.data[k++] = response.image[i][j][0];
+                        imgData.data[k++] = response.image[i][j][1];
+                        imgData.data[k++] = response.image[i][j][2];
+                        imgData.data[k++] = 255;
+                    }
                 }
-            }
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.putImageData(imgData, 0, 0);
-        });
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.putImageData(imgData, 0, 0);
+            });
     }
 
     handleClose() {
@@ -114,9 +122,42 @@ export default class index extends Component {
         this.setState({ dialogOpen: false });
     };
 
+    handleModelChange(event) {
+        this.setState({ model: event.target.value });
+    };
+
     render() {
         return (
             <div style={{ position: 'relative' }}>
+                <FormControl component="fieldset">
+                    <FormLabel component="legend">Model</FormLabel>
+                    <RadioGroup aria-label="position" name="position" value={this.state.model} onChange={this.handleModelChange} row>
+                        <FormControlLabel
+                            value="1"
+                            control={<Radio color="primary" />}
+                            label="v1"
+                            labelPlacement="bottom"
+                        />
+                        <FormControlLabel
+                            value="2"
+                            control={<Radio color="primary" />}
+                            label="v2"
+                            labelPlacement="bottom"
+                        />
+                        <FormControlLabel
+                            value="3"
+                            control={<Radio color="primary" />}
+                            label="v3"
+                            labelPlacement="bottom"
+                        />
+                        <FormControlLabel
+                            value="4"
+                            control={<Radio color="primary" />}
+                            label="v4"
+                            labelPlacement="bottom"
+                        />
+                    </RadioGroup>
+                </FormControl>
                 <Button variant="outlined" color="primary" onClick={this.predict.bind(this)} disabled={this.state.isLoading}>
                     Predict
                 {this.state.isLoading && <CircularProgress size={24} style={{
