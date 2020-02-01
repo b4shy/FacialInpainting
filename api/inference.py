@@ -12,6 +12,8 @@ def register_inference_api(app: Flask, inference_manager: InferenceManager):
 
     @app.route('/inference', methods=['POST'])
     def get_tasks():
+        model = np.array(request.json['model'])
+        logger.info("Model: {model}".format(model=model))
         data = np.array(request.json['image'])
         image = data[:,:,:3]
         mask = data[:,:,3]
