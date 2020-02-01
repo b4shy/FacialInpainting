@@ -18,7 +18,7 @@ export default class index extends Component {
         super(props);
         this.state = {
             isLoading: false,
-            dialogOpen: true,
+            dialogOpen: false,
             model: "4",
             prediction: [],
             difference: [],
