@@ -31,8 +31,8 @@ def main(config_file="config.yml"):
     device = torch.device("cuda:0" if use_cuda else "cpu")
     
     net = DeFINe()
-    net.to(device)
     net.eval()
+    net.to(device)
     state_dict = torch.load(checkpoint_path, map_location=torch.device('cpu'))
     net.load_state_dict(state_dict)
 
