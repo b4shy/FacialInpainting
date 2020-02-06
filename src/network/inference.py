@@ -1,13 +1,13 @@
 """
 Prediction Demo
 """
-
+import os
 import logging
 import numpy as np
 import torch
 from .model import DeFINe
 
-class InferenceManager():
+class Inference():
     logger = logging.getLogger(__name__)
 
     def __init__(self, neural_net: DeFINe, architecture: torch.device):
@@ -56,3 +56,36 @@ class InferenceManager():
         masked_image = masked_image.reshape(1, 512, 512, 3)
         masked_image = torch.tensor(masked_image).float().to(self._architecture)
         return masked_image
+
+
+class InferenceManager():
+    logger = logging.getLogger(__name__)
+
+    def __init__(self, config):
+        self.config = config
+        checkpoint_path = os.path.join(os.path.abspath(".") + config["1"])
+        use_cuda = torch.cuda.is_available()
+        self.architecture = torch.device("cuda:0" if use_cuda else "cpu")
+        
+        self.neural_net = DeFINe()
+        self.neural_net.eval()
+        self.neural_net.to(self.architecture)
+        state_dict = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+        self.neural_net.load_state_dict(state_dict)
+        self.prediction = None
+        self.inference = Inference(self.neural_net, self.architecture)
+    
+    def change_selected_checkpoint(self, checkpoint_number: int):
+        checkpoint_path = os.path.join(os.path.abspath(".") + self.config[str(checkpoint_number)])
+        self.logger.info(f"Changed checkpoint path to {checkpoint_path}")
+        state_dict = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+        self.neural_net.load_state_dict(state_dict)
+        self.logger.info(f"Loaded new state dict into model.")
+        self.inference = Inference(self.neural_net, self.architecture)
+        self.logger.info("Allocated new inference object with adjusted model checkpoint.")
+
+    def process(self, image, mask):
+        prediction = self.inference.infer(image, mask)
+        return prediction
+
+

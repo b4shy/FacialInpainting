@@ -7,4 +7,7 @@ webserver:
   template_folder: "build"
 
 neural_network:
-  checkpoint: "/weights/neural_network_weights"
+  "1": "/weights/neural_network_weights"
+  "2": "/weights/neural_network_weights"
+  "3": "/weights/neural_network_weights"
+  "4": "/weights/neural_network_weights"
