@@ -59,16 +59,12 @@ class Loss():
         Calculates the VGG Output on the corresponding instance variables and stores them as instance variable
         """
         self.vgg16_gt_out = self.vgg16_model(self.orig_image_permuted)
-        torch.cuda.empty_cache()
 
         self.vgg16_pred_out = self.vgg16_model(self.prediction)
-        torch.cuda.empty_cache()
 
         self.comp = self.mask_permuted * self.orig_image_permuted + (1 - self.mask_permuted) * self.prediction
-        torch.cuda.empty_cache()
 
         self.vgg16_comp_out = self.vgg16_model(self.comp)
-        torch.cuda.empty_cache()
 
     def calculate_perceptual_loss(self):
         """

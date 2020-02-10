@@ -51,6 +51,7 @@ if finetune:
     NET.apply(set_bn_eval)
 
 vgg16_partial = Vgg16()
+vgg16_partial.eval()
 
 
 if cuda_device_count > 1:
@@ -86,7 +87,7 @@ training_generator = data.DataLoader(training_set, **params)
 
 opt = torch.optim.Adam(NET.parameters(), lr=learning_rate)
 NET.train()
-loss = Loss(vgg16_partial, 20)
+loss = Loss(vgg16_partial, 4)
 
 writer = SummaryWriter(logdir)
 GLOBAL_STEP = 0

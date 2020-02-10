@@ -195,7 +195,6 @@ class Vgg16(torch.nn.Module):
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()
-        self.slice4 = torch.nn.Sequential()
         for x in range(5):
             self.slice1.add_module(str(x), vgg_pretrained_features[x])
         for x in range(5, 10):
@@ -229,7 +228,6 @@ class Vgg16(torch.nn.Module):
         :param x: Input batch
         :returns: The normalized Input Batch according to ImageNet
         """
-        x_norm = x / 255
         mean = x.data.new(x.data.size())
         std = x.data.new(x.data.size())
         mean[:, 0, :, :] = 0.485
@@ -238,7 +236,7 @@ class Vgg16(torch.nn.Module):
         std[:, 0, :, :] = 0.229
         std[:, 1, :, :] = 0.224
         std[:, 2, :, :] = 0.225
-        x_norm = x_norm - mean
+        x_norm = x - mean
         x_norm = x_norm / std
         return x_norm
 
