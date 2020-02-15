@@ -1,11 +1,18 @@
 from context import loader  # noqa
 import numpy as np
 import os
+from torchvision import transforms
+
 path = os.path.abspath(os.path.dirname(__file__))
 
 face_path = f'{path}/mock/Faces'
 mask_path = f'{path}/mock/mask'
-dataset = loader.Dataset(faces_path=face_path, mask_path=mask_path)
+
+dataset = loader.Dataset(faces_path=face_path, mask_path=mask_path,transforms=transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor()
+]))
 
 
 def test_init():
