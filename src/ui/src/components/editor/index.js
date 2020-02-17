@@ -5,6 +5,8 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import Slider from '@material-ui/core/Slider';
+import BrushIcon from '@material-ui/icons/Brush';
+import FormatColorResetIcon from '@material-ui/icons/FormatColorReset';
 
 import ImageCanvas from '../imageCanvas';
 import EditCanvas from '../editCanvas';
@@ -52,8 +54,8 @@ const marks = [
         label: '5px',
     },
     {
-        value: 100,
-        label: '100px',
+        value: 30,
+        label: '30px',
     },
 ];
 
@@ -67,7 +69,7 @@ export default class index extends Component {
         this.state = {
             //image: "",
             //crop: {},
-            size: 25,
+            size: 10,
             erase: false
         };
         this.editCanvas = React.createRef();
@@ -103,7 +105,7 @@ export default class index extends Component {
                                 valueLabelDisplay="auto"
                                 marks={marks}
                                 min={5}
-                                max={100}
+                                max={30}
                                 onChangeCommitted={(event, value) => this.handleSizeChange(value)}
                             />
                         </Grid>

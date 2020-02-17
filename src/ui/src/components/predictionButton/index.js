@@ -55,33 +55,7 @@ export default class index extends Component {
             }
             newImage[y] = imageRow;
         }
-
-
-        //console.log("predict:", newImage);
-        /*
-        var fileName = "networkInputImage";
-        //const json = JSON.stringify(newImage);
-        //const blob = new Blob([json], { type: 'application/json' });
-        //const href = await URL.createObjectURL(blob);
-        var link = document.createElement('a');
-        link.href = imgPNG;
-        link.download = fileName + ".png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        fileName = "networkInputMask";
-        //const json = JSON.stringify(newImage);
-        //const blob = new Blob([json], { type: 'application/json' });
-        //const href = await URL.createObjectURL(blob);
-        var link = document.createElement('a');
-        link.href = maskPNG;
-        link.download = fileName + ".png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);*/
-
-        //TODO
+        
         this.setState({ isLoading: true });
         fetch('/inference', {
             method: 'POST',

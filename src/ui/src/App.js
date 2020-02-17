@@ -7,6 +7,7 @@ import { Typography } from '@material-ui/core';
 function App() {
   const [src, setSrc] = React.useState(false);
   const [crop, setCrop] = React.useState(false);
+  const [result, setResult] = React.useState(false);
 
   const imagecropCallbackFunction = (childData) => {
     setCrop(childData.crop);
