@@ -29,7 +29,7 @@ export default class index extends Component {
         this.handleModelChange = this.handleModelChange.bind(this);
         this.handleResultTypeChange = this.handleResultTypeChange.bind(this);
     }
-    
+
     async predict() {
         const editCanvas = this.props.editDataRef.current.canvasRef.current;
         const editContext = editCanvas.getContext('2d');
@@ -51,7 +51,7 @@ export default class index extends Component {
             newImage[y] = imageRow;
         }
         console.log("request:", newImage);
-        
+
         this.setState({ isLoading: true });
         fetch('/inference', {
             method: 'POST',
@@ -66,7 +66,10 @@ export default class index extends Component {
         }).then(response => response.json())
             .then(response => {
                 console.log("response:", response);
-                this.props.parentCallback(response);
+                var d = new Date();
+                var id = d.getTime();
+
+                this.props.parentCallback({id: id, image: response.image});
 
                 /*this.setState({ dialogOpen: true });
 
@@ -155,12 +158,12 @@ export default class index extends Component {
         const ctx = canvas.getContext('2d');
         var imgData = ctx.createImageData(canvas.width, canvas.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if(event.target.value == "diff"){
+        if (event.target.value == "diff") {
             console.log("diff:", this.state.difference);
             for (let i = 0; i < imgData.data.length; i++) {
                 imgData.data[i] = this.state.difference[i];
-            }   
-        }else{
+            }
+        } else {
             console.log("prediction:", this.state.prediction);
             for (let i = 0; i < imgData.data.length; i++) {
                 imgData.data[i] = this.state.prediction[i];
