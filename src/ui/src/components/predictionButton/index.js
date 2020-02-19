@@ -29,8 +29,9 @@ export default class index extends Component {
         this.handleModelChange = this.handleModelChange.bind(this);
         this.handleResultTypeChange = this.handleResultTypeChange.bind(this);
     }
+    
     async predict() {
-        const editCanvas = this.props.editCanvas.current.canvasRef.current;
+        const editCanvas = this.props.editDataRef.current.canvasRef.current;
         const editContext = editCanvas.getContext('2d');
         const editData = editContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
 
@@ -49,6 +50,7 @@ export default class index extends Component {
             }
             newImage[y] = imageRow;
         }
+        console.log("request:", newImage);
         
         this.setState({ isLoading: true });
         fetch('/inference', {
@@ -64,8 +66,9 @@ export default class index extends Component {
         }).then(response => response.json())
             .then(response => {
                 console.log("response:", response);
+                this.props.parentCallback(response);
 
-                this.setState({ dialogOpen: true });
+                /*this.setState({ dialogOpen: true });
 
                 const canvas = this.canvasRef.current;
                 const ctx = canvas.getContext('2d');
@@ -129,7 +132,7 @@ export default class index extends Component {
                     differenceImage[k++] = 255;
                 }
 
-                this.setState({ difference: differenceImage });
+                this.setState({ difference: differenceImage });*/
 
 
                 this.setState({ isLoading: false });
@@ -208,33 +211,6 @@ export default class index extends Component {
                         marginLeft: -12
                     }} />}
                 </Button>
-                <Dialog onClose={this.handleClose} aria-labelledby="dialog-title" open={this.state.dialogOpen}>
-                    <DialogTitle id="dialog-title" onClose={this.handleClose}>
-                        Load Image
-                    </DialogTitle>
-                    <DialogContent dividers>
-                        <FormControl component="fieldset">
-                            <RadioGroup value={this.state.resultType} onChange={this.handleResultTypeChange} row>
-                                <FormControlLabel
-                                    value="result"
-                                    control={<Radio color="primary" />}
-                                    label="result"
-                                />
-                                <FormControlLabel
-                                    value="diff"
-                                    control={<Radio color="primary" />}
-                                    label="diff"
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                        <canvas ref={this.canvasRef} height={IMAGE_SIZE.height} width={IMAGE_SIZE.width}></canvas>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            Close
-                        </Button>
-                    </DialogActions>
-                </Dialog>
             </div>
         )
     }

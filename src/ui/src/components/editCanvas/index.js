@@ -51,17 +51,12 @@ export default class index extends Component {
     getCoordinates(event) {
         const canvas = this.canvasRef.current;
         var rect = canvas.getBoundingClientRect();
-        //console.log("rect:", rect);
         if (window.TouchEvent && event instanceof TouchEvent) {
             event.preventDefault();
             return { x: (event.touches[0].clientX - rect.left)/rect.width*IMAGE_SIZE.width, y: (event.touches[0].clientY - rect.top)/rect.height*IMAGE_SIZE.height };
         } else {
-            //console.log("page:", event.pageY);
-            //console.log("client:", event.clientY);
-            //console.log("event:", event);
             return { x: (event.clientX - rect.left)/rect.width*IMAGE_SIZE.width, y: (event.clientY - rect.top)/rect.height*IMAGE_SIZE.height };
         }
-        //console.log(event.pageY,canvas.offsetTop ,rect.top);
     };
 
     drawLine(originalMousePosition, newMousePosition) {

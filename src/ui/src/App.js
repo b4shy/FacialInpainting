@@ -5,19 +5,36 @@ import EditorCard from './components/editorCard';
 import ImageLoaderModal from './components/imageLoaderModal';
 import { Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import { IMAGE_SIZE } from './constants'
+
+const createEmptyImage = () => {
+  const canvas = document.createElement('canvas');
+  canvas.width = IMAGE_SIZE.width;
+  canvas.height = IMAGE_SIZE.height;
+  const context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  const imageData = context.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
+  const imageUrl = canvas.toDataURL("image/png");
+  const result = { imageData: imageData, imageUrl: imageUrl }
+
+  return result;
+}
 
 function App() {
-  const [src, setSrc] = React.useState(false);
-  const [crop, setCrop] = React.useState(false);
-  const [imageData, setImageData] = React.useState(false);
-  const [result, setResult] = React.useState(false);
+  const [image, setImage] = React.useState(() => createEmptyImage());
+  const [prediction, setPrediction] = React.useState(false);
 
   const imagecropCallbackFunction = (childData) => {
-    setCrop(childData.crop);
-    setSrc(childData.src);
-    setImageData(childData.imageData);
+    setImage(childData.imageData);
     //console.log(childData.imageData);
   };
+
+  const predictCallbackFunction = (prediction) => {
+    console.log("pred", prediction);
+    setPrediction(prediction);
+  };
+
+  
 
   return (
     <div className="App">
@@ -26,10 +43,10 @@ function App() {
       </Typography>
       <Grid container spacing={3} direction="row" justify="center" alignItems="center">
         <Grid item xs={12} sm={6}>
-          <EditorCard image={imageData}></EditorCard>
+          <EditorCard image={image} parentCallback={predictCallbackFunction}></EditorCard>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <ResultCard result={result}></ResultCard>
+          <ResultCard prediction={prediction} imageData={image.imageData}></ResultCard>
         </Grid>
       </Grid>
       <ImageLoaderModal parentCallback={imagecropCallbackFunction} />

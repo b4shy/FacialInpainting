@@ -87,6 +87,10 @@ export default class index extends Component {
         this.setState({ erase: false });
     }
 
+    componentDidMount() {
+        this.props.parentCallback(this.editCanvas);
+    }
+
     render() {
         //javascript code der bild in canvas lädt
         //console.log(this.props.imageData);
@@ -133,11 +137,7 @@ export default class index extends Component {
                     </Button>
                     </Grid>
                 </Grid>
-                <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} imageUrl={this.props.image.imageUrl} style={{ cursor: 'crosshair' }} />
-
-
-
-                <PredictionButton editCanvas={this.editCanvas} imageData={this.props.image.imageData} />
+                <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} imageUrl={this.props.imageUrl} style={{ cursor: 'crosshair' }} />
             </div>
         )
     }
