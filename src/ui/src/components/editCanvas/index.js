@@ -51,13 +51,15 @@ export default class index extends Component {
     getCoordinates(event) {
         const canvas = this.canvasRef.current;
         var rect = canvas.getBoundingClientRect();
+        //console.log("rect:", rect);
         if (window.TouchEvent && event instanceof TouchEvent) {
             event.preventDefault();
-            return { x: event.touches[0].clientX - rect.left, y: event.touches[0].clientY - rect.top };
+            return { x: (event.touches[0].clientX - rect.left)/rect.width*IMAGE_SIZE.width, y: (event.touches[0].clientY - rect.top)/rect.height*IMAGE_SIZE.height };
         } else {
             //console.log("page:", event.pageY);
             //console.log("client:", event.clientY);
-            return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+            //console.log("event:", event);
+            return { x: (event.clientX - rect.left)/rect.width*IMAGE_SIZE.width, y: (event.clientY - rect.top)/rect.height*IMAGE_SIZE.height };
         }
         //console.log(event.pageY,canvas.offsetTop ,rect.top);
     };
@@ -91,9 +93,18 @@ export default class index extends Component {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
+    createBackground() {
+        var data = 'url("' + this.props.imageUrl + '")';
+        //console.log(data);
+        return data;
+    }
+
     render() {
         return (
-            <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} ref={this.canvasRef} style={{ position: 'absolute', left: 0, top: 0, zIndex: 1, border: '1px black solid' }}>
+            <canvas height={IMAGE_SIZE.height}
+                width={IMAGE_SIZE.width}
+                ref={this.canvasRef}
+                style={{ border: '1px black solid', maxWidth: '98%', backgroundImage: this.createBackground(), backgroundSize: "100% 100%" }}>
             </canvas>
         )
     }

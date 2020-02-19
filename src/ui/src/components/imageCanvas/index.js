@@ -20,7 +20,9 @@ export default class index extends Component {
             image.src = this.props.src;
 
 
-            const canvas = this.canvasRef.current;
+            const canvas = document.createElement('canvas');
+            canvas.width = IMAGE_SIZE.width;
+            canvas.height = IMAGE_SIZE.height;
             const context = canvas.getContext('2d');
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(
@@ -38,9 +40,6 @@ export default class index extends Component {
     }
 
     render() {
-        return (
-            <canvas height={IMAGE_SIZE.height} width={IMAGE_SIZE.width} ref={this.canvasRef} style={{position: 'absolute', left: 0, top: 0, zIndex: 0}}>
-            </canvas>
-        )
+        return false;
     }
 }

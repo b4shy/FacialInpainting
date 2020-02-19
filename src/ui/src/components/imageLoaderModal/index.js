@@ -8,6 +8,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
+import { IMAGE_SIZE } from '../../constants'
 
 import ImageCrop from '../imageCrop';
 
@@ -65,7 +66,9 @@ export default function CustomizedDialogs(props) {
     setOpen(false);
   };
   const handleLoad = () => {
-    props.parentCallback({crop: crop, src: src});
+    var imageData = createImageData();
+    //console.log(imageData);
+    props.parentCallback({crop: crop, src: src, imageData: imageData});
     setOpen(false);
     setCrop({});
     setSrc("");
@@ -75,6 +78,37 @@ export default function CustomizedDialogs(props) {
     setSrc(childData.src);
     //this.setState({message: childData})
   };
+  const createImageData = () => {
+    var result = {};
+
+    if (src !== "") {
+      var image = new Image();
+      image.src = src;
+
+
+      const canvas = document.createElement('canvas');
+      canvas.width = IMAGE_SIZE.width;
+      canvas.height = IMAGE_SIZE.height;
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(
+          image, 
+          crop.x * image.width / 100,
+          crop.y * image.height / 100,
+          crop.width * image.width / 100,
+          crop.height * image.height / 100,
+          0, 
+          0,
+          IMAGE_SIZE.width,
+          IMAGE_SIZE.height
+          );
+          const imageData = context.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
+          const imageUrl = canvas.toDataURL("image/png");
+          result = {imageData: imageData, imageUrl: imageUrl}
+  }
+
+    return result;
+  }
 
   return (
     <div>

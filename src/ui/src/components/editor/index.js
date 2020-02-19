@@ -73,7 +73,6 @@ export default class index extends Component {
             erase: false
         };
         this.editCanvas = React.createRef();
-        this.imageCanvas = React.createRef();
     }
 
     handlePenChange(e) {
@@ -90,8 +89,9 @@ export default class index extends Component {
 
     render() {
         //javascript code der bild in canvas lädt
+        //console.log(this.props.imageData);
         return (
-            <Container>
+            <div>
                 <Grid container spacing={3}>
                     <Grid item xs={4}>
                         <Grid item xs={12}>
@@ -132,16 +132,13 @@ export default class index extends Component {
                             Reset
                     </Button>
                     </Grid>
-                    <Grid item xs={12} style={{}}>
-                        <Container style={{ position: 'relative', width: IMAGE_SIZE.width, height: IMAGE_SIZE.height, cursor: 'crosshair' }}>
-                            <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} />
-                            <ImageCanvas crop={this.props.crop} src={this.props.src} ref={this.imageCanvas}/>
-                        </Container>
-                    </Grid>
                 </Grid>
+                <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} imageUrl={this.props.image.imageUrl} style={{ cursor: 'crosshair' }} />
 
-                <PredictionButton editCanvas={this.editCanvas} imageCanvas={this.imageCanvas}/>
-            </Container>
+
+
+                <PredictionButton editCanvas={this.editCanvas} imageData={this.props.image.imageData} />
+            </div>
         )
     }
 }

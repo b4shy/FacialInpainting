@@ -33,21 +33,15 @@ export default class index extends Component {
         const editCanvas = this.props.editCanvas.current.canvasRef.current;
         const editContext = editCanvas.getContext('2d');
         const editData = editContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
-        //const maskPNG = editCanvas.toDataURL("image/png");
-        //console.log("predict:", this.props.editCanvas.current.canvasRef.current.toDataURL());
-        const imageCanvas = this.props.imageCanvas.current.canvasRef.current;
-        const imageContext = imageCanvas.getContext('2d');
-        const imageData = imageContext.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height).data;
-        //const imgPNG = imageCanvas.toDataURL("image/png");
 
         var newImage = new Array(IMAGE_SIZE.height);
         for (var y = 0; y < IMAGE_SIZE.height; y++) {
             var imageRow = new Array(IMAGE_SIZE.width);
             for (var x = 0; x < IMAGE_SIZE.width; x++) {
                 var pixel = [
-                    imageData[4 * (y * IMAGE_SIZE.width + x)], // red
-                    imageData[4 * (y * IMAGE_SIZE.width + x) + 1], // green
-                    imageData[4 * (y * IMAGE_SIZE.width + x) + 2], // blue
+                    this.props.imageData[4 * (y * IMAGE_SIZE.width + x)], // red
+                    this.props.imageData[4 * (y * IMAGE_SIZE.width + x) + 1], // green
+                    this.props.imageData[4 * (y * IMAGE_SIZE.width + x) + 2], // blue
                     editData[4 * (y * IMAGE_SIZE.width + x) + 3], // alpha
                 ];
 
