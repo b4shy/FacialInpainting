@@ -29,7 +29,7 @@ export default class index extends Component {
 
     componentDidUpdate(prevProps, prevState) {
 
-        if (prevProps.prediction.id != this.props.prediction.id) {
+        if (prevProps.prediction.id !== this.props.prediction.id) {
             //if (prevState.value == this.state.value) {
             console.log("update");
 
@@ -63,8 +63,8 @@ export default class index extends Component {
                 var l = 0;
                 var difference = [];
                 var data = [];
-                for (var i = 0; i < resultCanvas.height; i++) {
-                    for (var j = 0; j < resultCanvas.width; j++) {
+                for (let i = 0; i < resultCanvas.height; i++) {
+                    for (let j = 0; j < resultCanvas.width; j++) {
                         data[k++] = this.props.prediction.image[i][j][0];
                         data[k++] = this.props.prediction.image[i][j][1];
                         data[k++] = this.props.prediction.image[i][j][2];
@@ -79,7 +79,7 @@ export default class index extends Component {
                     }
                 }
 
-                for (var i = 0; i < data.length; i++) {
+                for (let i = 0; i < data.length; i++) {
                     imgData.data[i] = data[i];
                 }
 
@@ -123,7 +123,7 @@ export default class index extends Component {
 
     render() {
         return (
-            <Card>
+            <Card variant="outlined">
                 <CardContent>
                     <Tabs
                         value={this.state.value}
@@ -131,6 +131,7 @@ export default class index extends Component {
                         indicatorColor="primary"
                         textColor="primary"
                         centered
+                        style={{margin:"5px"}}
                     >
                         <Tab label="Result" />
                         <Tab label="Difference" />

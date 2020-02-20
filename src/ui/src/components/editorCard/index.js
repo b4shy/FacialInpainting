@@ -4,6 +4,7 @@ import CardContent from '@material-ui/core/CardContent';
 
 import Editor from '../editor';
 import PredictionButton from '../predictionButton';
+import ImageLoaderModal from '../imageLoaderModal';
 
 
 export default function EditorCard(props) {
@@ -19,11 +20,18 @@ export default function EditorCard(props) {
     props.parentCallback(prediction);
   };
 
+  const loadingCallback = (image) => {
+    props.loadImageCallback(image);
+  };
+
+  console.log("imageUrl:", props.image);
+
   return (
-    <Card>
+    <Card variant="outlined">
       <CardContent>
+        <ImageLoaderModal parentCallback={loadingCallback}/>
         <Editor imageUrl={props.image.imageUrl} parentCallback={editDataCallback} />
-        <PredictionButton editDataRef={editDataRef} imageData={props.image.imageData} parentCallback={predictionCallback}/>
+        <PredictionButton editDataRef={editDataRef} imageData={props.image.imageData} parentCallback={predictionCallback} />
       </CardContent>
     </Card>
   );

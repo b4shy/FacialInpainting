@@ -7,46 +7,10 @@ import Switch from '@material-ui/core/Switch';
 import Slider from '@material-ui/core/Slider';
 import BrushIcon from '@material-ui/icons/Brush';
 import FormatColorResetIcon from '@material-ui/icons/FormatColorReset';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import ImageCanvas from '../imageCanvas';
 import EditCanvas from '../editCanvas';
-import PredictionButton from '../predictionButton';
-import { IMAGE_SIZE } from '../../constants'
-import { Container } from '@material-ui/core';
-
-const AntSwitch = withStyles(theme => ({
-    root: {
-        width: 28,
-        height: 16,
-        padding: 0,
-        display: 'flex',
-    },
-    switchBase: {
-        padding: 2,
-        color: theme.palette.grey[500],
-        '&$checked': {
-            transform: 'translateX(12px)',
-            color: theme.palette.common.white,
-            '& + $track': {
-                opacity: 1,
-                backgroundColor: theme.palette.primary.main,
-                borderColor: theme.palette.primary.main,
-            },
-        },
-    },
-    thumb: {
-        width: 12,
-        height: 12,
-        boxShadow: 'none',
-    },
-    track: {
-        border: `1px solid ${theme.palette.grey[500]}`,
-        borderRadius: 16 / 2,
-        opacity: 1,
-        backgroundColor: theme.palette.common.white,
-    },
-    checked: {},
-}))(Switch);
 
 const marks = [
     {
@@ -87,6 +51,11 @@ export default class index extends Component {
         this.setState({ erase: false });
     }
 
+    handleAlignment(event, newAlignment) {
+        console.log(this.state.erase);
+        this.setState({ erase: !this.state.erase });
+    };
+
     componentDidMount() {
         this.props.parentCallback(this.editCanvas);
     }
@@ -96,6 +65,7 @@ export default class index extends Component {
         //console.log(this.props.imageData);
         return (
             <div>
+                <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} imageUrl={this.props.imageUrl} />
                 <Grid container spacing={3}>
                     <Grid item xs={4}>
                         <Grid item xs={12}>
@@ -115,29 +85,31 @@ export default class index extends Component {
                         </Grid>
                     </Grid>
                     <Grid item xs={4}>
-                        <Grid component="label" container alignItems="center" spacing={1}>
-                            <Grid item>Pen</Grid>
-                            <Grid item>
-                                <AntSwitch
-                                    checked={this.state.erase}
-                                    onChange={this.handlePenChange.bind(this)}
-                                />
-                            </Grid>
-                            <Grid item>Eraser</Grid>
-                        </Grid>
+                        <ToggleButtonGroup
+                            exclusive
+                            onChange={this.handleAlignment.bind(this)}
+                            aria-label="erase"
+                        >
+                            <ToggleButton value="true" selected={!this.state.erase} aria-label="pen">
+                                <BrushIcon/>
+                            </ToggleButton>
+                            <ToggleButton value="false" selected={this.state.erase} aria-label="erase">
+                                <FormatColorResetIcon/>
+                            </ToggleButton>
+                        </ToggleButtonGroup>
                     </Grid>
                     <Grid item xs={4}>
                         <Button
-                            variant="contained"
+                            variant="outlined"
                             color="secondary"
+                            size="small"
                             startIcon={<RestoreIcon />}
                             onClick={this.handleClearDrawing.bind(this)}
                         >
-                            Reset
+                            Clear
                     </Button>
                     </Grid>
                 </Grid>
-                <EditCanvas size={this.state.size} erase={this.state.erase} ref={this.editCanvas} imageUrl={this.props.imageUrl} style={{ cursor: 'crosshair' }} />
             </div>
         )
     }

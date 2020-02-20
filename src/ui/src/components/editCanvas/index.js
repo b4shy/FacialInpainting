@@ -29,6 +29,7 @@ export default class index extends Component {
         if (coordinates) {
             this.setState({ mousePosition: coordinates });
             this.setState({ isPainting: true });
+            this.drawDot(this.state.mousePosition);
         }
     };
 
@@ -82,6 +83,27 @@ export default class index extends Component {
         }
     };
 
+    drawDot(originalMousePosition) {
+        const canvas = this.canvasRef.current;
+        const context = canvas.getContext('2d');
+        if (context) {
+            context.fillStyle = 'red';
+            context.lineWidth = this.props.size;
+
+            if (this.props.erase) {
+                context.globalCompositeOperation = 'destination-out';
+            } else {
+                context.globalCompositeOperation = 'source-over';
+            }
+
+            context.beginPath();
+            context.arc(originalMousePosition.x, originalMousePosition.y, this.props.size/2, 0, 360, false);
+            context.closePath();
+
+            context.fill();
+        }
+    };
+
     clearCanvas() {
         const canvas = this.canvasRef.current;
         const context = canvas.getContext('2d');
@@ -99,7 +121,7 @@ export default class index extends Component {
             <canvas height={IMAGE_SIZE.height}
                 width={IMAGE_SIZE.width}
                 ref={this.canvasRef}
-                style={{ border: '1px black solid', maxWidth: '98%', backgroundImage: this.createBackground(), backgroundSize: "100% 100%" }}>
+                style={{ border: '1px black solid', maxWidth: '98%', backgroundImage: this.createBackground(), backgroundSize: "100% 100%", cursor: 'crosshair' }}>
             </canvas>
         )
     }

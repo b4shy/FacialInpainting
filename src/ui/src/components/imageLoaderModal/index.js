@@ -67,8 +67,8 @@ export default function CustomizedDialogs(props) {
   };
   const handleLoad = () => {
     var imageData = createImageData();
-    //console.log(imageData);
-    props.parentCallback({crop: crop, src: src, imageData: imageData});
+    console.log(imageData);
+    props.parentCallback({imageData: imageData});
     setOpen(false);
     setCrop({});
     setSrc("");
@@ -112,7 +112,7 @@ export default function CustomizedDialogs(props) {
 
   return (
     <div>
-      <Button variant="outlined" color="secondary" onClick={handleClickOpen}>
+      <Button variant="outlined" color="secondary" onClick={handleClickOpen} style={{margin:"10px"}}>
         Load Image
       </Button>
       <Dialog onClose={handleClose} aria-labelledby="load-dialog-title" open={open}>
