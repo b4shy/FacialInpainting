@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 import numpy as np
 from src.network.inference import InferenceManager
 
@@ -9,6 +9,15 @@ def register_inference_api(app: Flask, inference_manager: InferenceManager):
     @app.route("/")
     def hello():
         return render_template('index.html')
+
+    #TODO: Pfad mit Regex verallgemeinern und Ordner aus Config laden
+    @app.route("/manifest.json")
+    def manifest():
+        return send_from_directory('./build', 'manifest.json')
+
+    @app.route('/defaultImage.png')
+    def favicon():
+        return send_from_directory('./build', 'defaultImage.png')
 
     @app.route('/inference', methods=['POST'])
     def get_tasks():
