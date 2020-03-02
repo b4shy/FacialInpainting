@@ -1,9 +1,13 @@
 import logging
-from flask import Flask, render_template, jsonify, request, send_from_directory
+from pathlib import Path, PurePath, PurePosixPath
+
 import numpy as np
+from flask import Flask, jsonify, render_template, request, send_from_directory
+
 from src.network.inference import InferenceManager
 
-def register_inference_api(app: Flask, inference_manager: InferenceManager):
+
+def register_inference_api(app: Flask, inference_manager: InferenceManager, build_base_path: str):
     logger = logging.getLogger(__name__)
 
     @app.route("/")
@@ -13,11 +17,13 @@ def register_inference_api(app: Flask, inference_manager: InferenceManager):
     #TODO: Pfad mit Regex verallgemeinern und Ordner aus Config laden
     @app.route("/manifest.json")
     def manifest():
-        return send_from_directory('./build', 'manifest.json')
+        build_path = PurePath(PurePosixPath(build_base_path))
+        return send_from_directory(build_path, 'manifest.json')
 
     @app.route('/defaultImage.png')
     def favicon():
-        return send_from_directory('./build', 'defaultImage.png')
+        build_path = PurePath(PurePosixPath(build_base_path))
+        return send_from_directory(build_path, 'defaultImage.png')
 
     @app.route('/inference', methods=['POST'])
     def get_tasks():

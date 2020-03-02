@@ -27,7 +27,7 @@ def main(config_file="config.yml"):
     app.logger.setLevel(webserver_config["logging_level"])
 
     inference_manager = InferenceManager(neural_network_config)
-    register_inference_api(app, inference_manager)
+    register_inference_api(app, inference_manager, webserver_config["template_folder"])
 
     logger.info("Starting Flask!")
     app.run(host=webserver_config["host_address"],
