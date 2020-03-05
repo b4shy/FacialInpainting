@@ -18,8 +18,8 @@ const marks = [
         label: '5px',
     },
     {
-        value: 30,
-        label: '30px',
+        value: 100,
+        label: '100px',
     },
 ];
 
@@ -79,7 +79,7 @@ export default class index extends Component {
                                 valueLabelDisplay="auto"
                                 marks={marks}
                                 min={5}
-                                max={30}
+                                max={100}
                                 onChangeCommitted={(event, value) => this.handleSizeChange(value)}
                             />
                         </Grid>
