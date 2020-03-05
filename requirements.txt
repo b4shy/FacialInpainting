@@ -6,3 +6,5 @@ opencv-python
 matplotlib
 pytest-cov
 tensorboard
+pyyaml
+flask
