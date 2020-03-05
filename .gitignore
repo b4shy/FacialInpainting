@@ -1,0 +1,15 @@
+.idea/
+*__pycache*
+*venv/
+*ckt/
+*runs/
+
+# Sphinx documentation
+docs/_build/
+
+# weights
+*weights/
+
+# UI
+*node_modules/
+*build/

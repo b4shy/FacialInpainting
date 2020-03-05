@@ -1,1 +1,10 @@
 flake8
+torch
+torchvision
+pylint-fail-under
+opencv-python
+matplotlib
+pytest-cov
+tensorboard
+pyyaml
+flask

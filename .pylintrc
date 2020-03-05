@@ -1,0 +1,10 @@
+[MASTER]
+extension-pkg-whitelist=PyQt5
+max-line-length=120
+ignore=partialconv2d.py
+disable=E1102, E0401, C0103
+
+[TYPECHECK]
+generated-members=numpy.*, torch.*, cv2.*
+
+

@@ -1,0 +1,27 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+yapf = "*"
+pylint = "*"
+mypy = "*"
+flake8 = "*"
+pylint-fail-under = "*"
+pytest-cov = "*"
+
+[packages]
+sphinx = "*"
+rinohtype = "*"
+flask = "*"
+numpy = "*"
+torch = "*"
+torchvision = "*"
+opencv-python = "*"
+matplotlib = "*"
+tensorboard = "*"
+pyyaml = "*"
+
+[requires]
+python_version = "3.7"
